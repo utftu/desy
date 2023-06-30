@@ -1,0 +1,16 @@
+{
+  "name": "ssy",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "^0.6.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "mitata": "^0.1.6",
+    "vite": "^4.3.9",
+    "yup": "^1.2.0"
+  }
+}

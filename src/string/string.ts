@@ -1,12 +1,20 @@
 import {messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
-import { Context} from '../context/context.ts';
+import {Context} from '../context/context.ts';
+
+type infer<TSchema extends StringMy> = TSchema['types'];
+
+function infer(cls) {
+  return;
+}
 
 type Config = {
   context: Context;
 };
 
 export class StringMy extends Schema {
+  types: string;
+
   static new(config: Config) {
     return new StringMy(config);
   }
@@ -28,14 +36,15 @@ export class StringMy extends Schema {
   declare context: Context;
 
   constructor({context}: {context: Context}) {
-    super();
-    this.context = context;
+    super({context});
     context.rules.push({name: 'string:string', test: StringMy.string});
     context.rules.push({name: 'string:required', test: StringMy.required});
   }
 
   optional() {
-    this.context.rules = this.context.rules.filter(({test}) => test !== StringMy.required);
+    this.context.rules = this.context.rules.filter(
+      ({test}) => test !== StringMy.required
+    );
     return this;
   }
 
@@ -80,5 +89,5 @@ export class StringMy extends Schema {
 }
 
 export function string() {
-  return StringMy.new({context: Context.new()})
+  return StringMy.new({context: Context.new()});
 }

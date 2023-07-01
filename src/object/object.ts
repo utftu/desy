@@ -10,7 +10,7 @@ export class ObjectMy extends Schema {
     return new ObjectMy(config);
   }
 
-  context: Context;
+  declare context: Context;
 
   static object(value) {
     if (typeof value !== 'object') {
@@ -20,8 +20,7 @@ export class ObjectMy extends Schema {
   }
 
   constructor({value, context}: Config<ObjectMyValue>) {
-    super();
-    this.context = context;
+    super({context});
     context.rules.push({name: 'object:object', test: ObjectMy.object});
     context.rules.push({
       name: 'object:strict',
@@ -57,7 +56,9 @@ export class ObjectMy extends Schema {
   }
 
   optional() {
-    this.context.rules = this.context.rules.filter(({test}) => test !== ObjectMy.object);
+    this.context.rules = this.context.rules.filter(
+      ({test}) => test !== ObjectMy.object
+    );
     return this;
   }
 }

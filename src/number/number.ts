@@ -1,0 +1,57 @@
+import {messages} from '../messages.ts';
+import {Schema} from '../schema/schema.ts';
+import {Context} from '../context/context.ts';
+
+type Config = {
+  context: Context;
+};
+
+export class NumberMy extends Schema {
+  static new(config: Config) {
+    return new NumberMy(config);
+  }
+
+  static number(value, {path}) {
+    if (typeof value !== 'number') {
+      return messages.number.number({path});
+    }
+    return '';
+  }
+
+  declare context: Context;
+
+  constructor({context}: {context: Context}) {
+    super({context});
+    context.rules.push({name: 'number:number', test: NumberMy.number});
+  }
+
+  min(min) {
+    this.context.rules.push({
+      name: 'string:min',
+      test: (value, {path}) => {
+        if (value < min) {
+          return messages.number.min({path, min});
+        }
+        return '';
+      },
+    });
+    return this;
+  }
+
+  max(max) {
+    this.context.rules.push({
+      name: 'string:max',
+      test: (value, {path}) => {
+        if (value > max) {
+          return messages.number.max({path, max});
+        }
+        return '';
+      },
+    });
+    return this;
+  }
+}
+
+export function number() {
+  return NumberMy.new({context: Context.new()});
+}

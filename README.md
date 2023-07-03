@@ -30,7 +30,7 @@ const mySchema = d.string();
 
 // validating
 mySchema.validate('tuna'); // => ""
-mySchema.validate(12); // => "Value must be sting"
+mySchema.validate(12); // => "Value must be string"
 ```
 
 Creating an object schema

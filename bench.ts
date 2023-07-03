@@ -1,46 +1,133 @@
-import {run, bench, group, baseline} from 'mitata';
-import {mixed} from './src/mixed/mixed.ts';
+import {run, bench, group} from 'mitata';
 import * as yup from 'yup';
 import {z} from 'zod';
-import Ajv from 'ajv';
+import {d} from './src/desy.ts';
 
-function runSeveralTimes(cb, times = 10000) {
+function runSeveralTimes(cb, times = 100) {
   for (let i = 0; i < times; i++) {
     cb();
   }
 }
 
-group('string', () => {
+function createPeople() {
+  let i = 0;
+
+  function num() {
+    return ++i;
+  }
+
+  function str() {
+    return (++i % 100).toString(16);
+  }
+
+  function array<T>(fn: () => T): T[] {
+    return Array.from({length: ++i % 10}, () => fn());
+  }
+
+  const people = Array.from({length: 100}, () => {
+    return {
+      type: 'person',
+      hair: i % 2 ? 'blue' : 'brown',
+      active: !!(i % 2),
+      name: str(),
+      age: num(),
+      hobbies: array(str),
+      address: {
+        street: str(),
+        zip: str(),
+        country: str(),
+      },
+    };
+  });
+
+  return people;
+}
+
+group('realworld', () => {
+  const people = createPeople();
   bench('yup', () => {
-    const schema = yup.string().required();
-    const validate = (value) => schema.isValidSync(value);
     runSeveralTimes(() => {
-      validate('hello');
+      const schema = yup.object().shape({
+        type: yup.string().oneOf(['person']).required(),
+        hair: yup.string().oneOf(['blue', 'brown']).required(),
+        active: yup.boolean().required(),
+        name: yup.string().required(),
+        age: yup.number().integer().required(),
+        hobbies: yup.array().of(yup.string()).required(),
+        address: yup
+          .object()
+          .shape({
+            street: yup.string().required(),
+            zip: yup.string().required(),
+            country: yup.string().required(),
+          })
+          .required(),
+      });
+      schema.isValidSync(people);
     });
   });
-  bench('ssy', () => {
-    const schema = mixed().string();
-    const validate = (value) => schema.test(value);
+  bench('zod', () => {
     runSeveralTimes(() => {
-      validate('hello');
+      const schema = z.array(
+        z.object({
+          type: z.literal('person'),
+          hair: z.enum(['blue', 'brown']),
+          active: z.boolean(),
+          name: z.string(),
+          age: z.number().int(),
+          hobbies: z.array(z.string()),
+          address: z.object({
+            street: z.string(),
+            zip: z.string(),
+            country: z.string(),
+          }),
+        })
+      );
+
+      schema.parse(people);
+    });
+  });
+  bench('desy', () => {
+    runSeveralTimes(() => {
+      const schema = d.array(
+        d.object({
+          type: d.string().oneOf(['person']),
+          hair: d.string().oneOf(['blue', 'brown']),
+          active: d.boolean(),
+          name: d.string(),
+          age: d.number().int(),
+          hobbies: d.array(d.string()),
+          address: d.object({
+            street: d.string(),
+            zip: d.string(),
+            country: d.string(),
+          }),
+        })
+      );
+      schema.validate(people);
+    });
+  });
+});
+
+group('string', () => {
+  bench('yup', () => {
+    runSeveralTimes(() => {
+      const schema = yup.string().required();
+      schema.isValidSync('hello');
+    });
+  });
+  bench('desy', () => {
+    runSeveralTimes(() => {
+      const schema = d.string();
+      schema.validate('hello');
     });
   });
   bench('zod', () => {
     const schema = z.string();
     const validate = (value) => schema.parse(value);
     runSeveralTimes(() => {
-      validate('hello');
-    });
-  });
-  bench('ajv', () => {
-    const ajv = new Ajv();
-    const schema = ajv.compile({
-      type: 'string',
-    });
-    const validate = (value) => schema(value);
-
-    runSeveralTimes(() => {
-      validate('hello');
+      const schema = z.string();
+      schema.parse('hello');
     });
   });
 });

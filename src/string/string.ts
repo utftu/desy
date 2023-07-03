@@ -2,19 +2,11 @@ import {messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 
-type infer<TSchema extends StringMy> = TSchema['types'];
-
-function infer(cls) {
-  return;
-}
-
 type Config = {
   context: Context;
 };
 
-export class StringMy extends Schema {
-  types: string;
-
+export class StringMy extends Schema<string> {
   static new(config: Config) {
     return new StringMy(config);
   }
@@ -84,6 +76,20 @@ export class StringMy extends Schema {
         return '';
       },
     });
+    return this;
+  }
+
+  oneOf(variants: readonly string[]) {
+    this.context.rules.push({
+      name: 'string:one_of',
+      test: (value: string, {path}) => {
+        if (!variants.includes(value)) {
+          return messages.string.one_of({path, variants, value});
+        }
+        return '';
+      },
+    });
+
     return this;
   }
 }

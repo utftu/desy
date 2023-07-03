@@ -1,14 +1,11 @@
 import {messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
+import {type Config} from '../types.ts';
 
-type Config = {
-  context: Context;
-};
-
-export class BooleanMy extends Schema {
+export class BooleanDsy extends Schema<boolean> {
   static new(config: Config) {
-    return new BooleanMy(config);
+    return new BooleanDsy(config);
   }
 
   static boolean(value, {path}) {
@@ -20,10 +17,39 @@ export class BooleanMy extends Schema {
 
   constructor({context}: {context: Context}) {
     super({context});
-    this.context.rules.push({name: 'boolean:boolean', test: BooleanMy.boolean});
+    this.context.rules.push({
+      name: 'boolean:boolean',
+      test: BooleanDsy.boolean,
+    });
+  }
+
+  true() {
+    this.context.rules.push({
+      name: 'boolean:true',
+      test: (value, {path}) => {
+        if (value !== true) {
+          return messages.boolean.true({path});
+        }
+        return '';
+      },
+    });
+    return this;
+  }
+
+  false() {
+    this.context.rules.push({
+      name: 'boolean:false',
+      test: (value, {path}) => {
+        if (value !== false) {
+          return messages.boolean.false({path});
+        }
+        return '';
+      },
+    });
+    return this;
   }
 }
 
 export function boolean() {
-  return BooleanMy.new({context: Context.new()});
+  return BooleanDsy.new({context: Context.new()});
 }

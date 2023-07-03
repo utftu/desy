@@ -1,21 +1,43 @@
 import {describe, expect, it} from 'bun:test';
 import {string} from './string.ts';
 
-describe('string', () => {
+describe.only('string', () => {
   it('string:string', () => {
-    const valid = string().test('valid');
-    const empty = string().test('');
-    const notString = string().test(undefined);
+    const schema = string();
 
-    expect(valid).toBe('');
-    expect(empty).not.toBe('');
-    expect(notString).not.toBe('');
+    expect(schema.validate('valid')).toBe('');
+    expect(schema.validate(undefined)).not.toBe('');
+  });
+  it('string:required', () => {
+    const schema = string();
+
+    expect(schema.validate('hello')).toBe('');
+    expect(schema.validate('')).not.toBe('');
   });
   it('optional', () => {
-    const notEmpty = string().optional().test('valid');
-    const empty = string().optional().test('');
+    const schema = string().optional();
 
-    expect(notEmpty).toBe('');
-    expect(empty).toBe('');
+    expect(schema.validate('')).toBe('');
+  });
+
+  it('string:min', () => {
+    const schema = string().min(1);
+
+    expect(schema.validate('')).not.toBe('');
+    expect(schema.validate('h')).toBe('');
+  });
+
+  it('string:min', () => {
+    const schema = string().max(1);
+
+    expect(schema.validate('he')).not.toBe('');
+    expect(schema.validate('h')).toBe('');
+  });
+
+  it('string:length', () => {
+    const schema = string().length(1);
+
+    expect(schema.validate('he')).not.toBe('');
+    expect(schema.validate('h')).toBe('');
   });
 });

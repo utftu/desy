@@ -1,17 +1,19 @@
-import {type} from 'os';
-import {Context} from '../context/context.ts';
+import {Context, Test, TestEntity} from '../context/context.ts';
 
 type Config = {
   context: Context;
 };
 
-export class Schema {
+export type Infer<TType extends Schema<any>> = TType['types'];
+
+export abstract class Schema<TValue> {
+  types: TValue;
   protected context: Context;
 
   constructor({context}: Config) {
     this.context = context;
   }
-  test(value: any, {path}: {path: string} = {path: 'Value'}) {
+  validate(value: TValue, {path}: {path: string} = {path: 'Value'}) {
     for (const testEntity of this.context.rules) {
       const error = testEntity.test(value, {path});
       if (error !== '') {
@@ -19,5 +21,10 @@ export class Schema {
       }
     }
     return '';
+  }
+
+  test(cb: Test) {
+    this.context.rules.push({name: 'custom', test: cb});
+    return this;
   }
 }

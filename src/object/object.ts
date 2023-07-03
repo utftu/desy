@@ -1,27 +1,33 @@
-import {Schema} from '../schema/schema.ts';
-import {type Context} from '../context/context.ts';
-import {type Config} from '../types.ts';
+import {Schema, type Infer} from '../schema/schema.ts';
+import {Context} from '../context/context.ts';
+import {type ConfigValue} from '../types.ts';
 import {messages} from '../messages.ts';
+import {string} from '../string/string.ts';
+import {number} from '../number/number.ts';
 
-export type ObjectMyValue = Record<string, Schema>;
+export type ObjectDsyValue = Record<string, Schema<any>>;
 
-export class ObjectMy extends Schema {
-  static new(config: Config<ObjectMyValue>) {
-    return new ObjectMy(config);
+type PreparedTypes<TValue extends ObjectDsyValue> = {
+  [K in keyof TValue]: Infer<TValue[K]>;
+};
+
+export class ObjectDsy<TValue extends ObjectDsyValue> extends Schema<
+  PreparedTypes<TValue>
+> {
+  static new<TValue extends ObjectDsyValue>(config: ConfigValue<TValue>) {
+    return new ObjectDsy(config);
   }
 
-  declare context: Context;
-
-  static object(value) {
+  static object(value, {path}) {
     if (typeof value !== 'object') {
-      return 'Not object';
+      return messages.object.object({path});
     }
     return '';
   }
 
-  constructor({value, context}: Config<ObjectMyValue>) {
+  constructor({value, context}: ConfigValue<TValue>) {
     super({context});
-    context.rules.push({name: 'object:object', test: ObjectMy.object});
+    context.rules.push({name: 'object:object', test: ObjectDsy.object});
     context.rules.push({
       name: 'object:strict',
       test: (currentValue, {path}) => {
@@ -42,10 +48,12 @@ export class ObjectMy extends Schema {
     });
     context.rules.push({
       name: 'object:fields',
-      test: (currentValue) => {
+      test: (currentValue, {path}) => {
         for (const key in value) {
           const schema = value[key];
-          const error = schema.test(currentValue[key], {path: key});
+          const error = schema.validate(currentValue[key], {
+            path: path === '' ? key : `${path}.${key}`,
+          });
           if (error !== '') {
             return error;
           }
@@ -55,10 +63,24 @@ export class ObjectMy extends Schema {
     });
   }
 
-  optional() {
+  notStrict() {
     this.context.rules = this.context.rules.filter(
-      ({test}) => test !== ObjectMy.object
+      ({name}) => name !== 'object:strict'
     );
     return this;
   }
 }
+
+export function object<TValue extends ObjectDsyValue>(value: TValue) {
+  return ObjectDsy.new({
+    value,
+    context: Context.new(),
+  });
+}
+
+// const user = object({
+//   name: string(),
+//   age: number(),
+// });
+
+// type User = Infer<typeof user>;

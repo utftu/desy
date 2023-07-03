@@ -1,14 +1,11 @@
 import {messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
+import {Config} from '../types.ts';
 
-type Config = {
-  context: Context;
-};
-
-export class NumberMy extends Schema {
+export class NumberDesy extends Schema<number> {
   static new(config: Config) {
-    return new NumberMy(config);
+    return new NumberDesy(config);
   }
 
   static number(value, {path}) {
@@ -22,7 +19,7 @@ export class NumberMy extends Schema {
 
   constructor({context}: {context: Context}) {
     super({context});
-    context.rules.push({name: 'number:number', test: NumberMy.number});
+    context.rules.push({name: 'number:number', test: NumberDesy.number});
   }
 
   min(min) {
@@ -50,8 +47,34 @@ export class NumberMy extends Schema {
     });
     return this;
   }
+
+  int() {
+    this.context.rules.push({
+      name: 'string:int',
+      test: (value, {path}) => {
+        if (!Number.isInteger(value)) {
+          return messages.number.int({path});
+        }
+        return '';
+      },
+    });
+    return this;
+  }
+
+  float() {
+    this.context.rules.push({
+      name: 'string:float',
+      test: (value, {path}) => {
+        if (Number.isInteger(value)) {
+          return messages.number.float({path});
+        }
+        return '';
+      },
+    });
+    return this;
+  }
 }
 
 export function number() {
-  return NumberMy.new({context: Context.new()});
+  return NumberDesy.new({context: Context.new()});
 }

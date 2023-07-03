@@ -3,8 +3,18 @@ import {boolean} from './boolean.ts';
 
 describe('boolean', () => {
   it('boolean:boolean', () => {
-    expect(boolean().test(true)).toBe('');
-    expect(boolean().test(false)).toBe('');
-    expect(boolean().test(undefined)).not.toBe('');
+    expect(boolean().validate(true)).toBe('');
+    expect(boolean().validate(false)).toBe('');
+    expect(boolean().validate(undefined)).not.toBe('');
+  });
+
+  it('boolean:false', () => {
+    expect(boolean().false().validate(true)).not.toBe('');
+    expect(boolean().false().validate(false)).toBe('');
+  });
+
+  it('boolean:true', () => {
+    expect(boolean().true().validate(true)).toBe('');
+    expect(boolean().true().validate(false)).not.toBe('');
   });
 });

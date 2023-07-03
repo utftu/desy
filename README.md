@@ -45,7 +45,7 @@ const userSchema = d.object({
 userSchema.validate({username: 'Ludwig'});
 
 // extract the inferred type
-type User = InferDesy<typeof User>;
+type User = InferDesy<typeof user>;
 // { username: string }
 ```
 

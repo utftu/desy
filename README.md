@@ -36,7 +36,7 @@ mySchema.validate(12); // => "Value must be string"
 Creating an object schema
 
 ```ts
-import {z, InferDesy} from 'desy';
+import {d, InferDesy} from 'desy';
 
 const userSchema = d.object({
   username: d.string(),

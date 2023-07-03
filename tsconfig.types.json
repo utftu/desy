@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types",
+    "declaration": true,
+    "noEmit": false
+  },
+  "include": ["src/desy.ts"]
+}

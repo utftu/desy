@@ -4,6 +4,9 @@ import {number} from './number/number.ts';
 import {boolean} from './boolean/boolean.ts';
 import {array} from './array/array.ts';
 import {mixed} from './mixed/mixed.ts';
+import {type Schema, type Infer} from './schema/schema.ts';
+
+export type InferDesy<T extends Schema<any>> = Infer<T>;
 
 export const d = {
   string,

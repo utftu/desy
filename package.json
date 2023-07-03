@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "bun build ./src/desy.ts --outdir ./dist --format esm"
+    "build": "bun build ./src/desy.ts --outdir ./dist && bun run types",
+    "types": "bunx tsc --project tsconfig.types.json"
   },
   "devDependencies": {
     "bun-types": "^0.6.0",

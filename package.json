@@ -2,13 +2,14 @@
   "name": "ssy",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "build": "bun build ./src/desy.ts --outdir ./dist --format esm"
+  },
   "devDependencies": {
     "bun-types": "^0.6.0",
     "mitata": "^0.1.6",
     "yup": "^1.2.0",
-    "zod": "^3.21.4"
-  },
-  "peerDependencies": {
+    "zod": "^3.21.4",
     "typescript": "^5.0.0"
   }
 }

@@ -86,7 +86,3 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
 export function array<TValue extends Schema<any>>(schema: TValue) {
   return new ArrayDesy({value: schema, context: Context.new()});
 }
-
-const a = array(string());
-
-type A = Infer<typeof a>;

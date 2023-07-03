@@ -1,7 +1,12 @@
 {
-  "name": "ssy",
-  "module": "index.ts",
+  "name": "desy",
+  "version": "0.0.1",
   "type": "module",
+  "types": "./dist/types/desy.d.ts",
+  "main": "./dist/desy.js",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "build": "bun build ./src/desy.ts --outdir ./dist && bun run types",
     "types": "bunx tsc --project tsconfig.types.json"
@@ -12,5 +17,6 @@
     "yup": "^1.2.0",
     "zod": "^3.21.4",
     "typescript": "^5.0.0"
-  }
+  },
+  "license": "MIT"
 }

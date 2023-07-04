@@ -1,4 +1,4 @@
-import {Schema} from '../schema/schema.ts';
+import {Infer, Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {StringDesy as StringDesy} from '../string/string.ts';
 import {type ObjectDsyValue, ObjectDesy} from '../object/object.ts';
@@ -10,7 +10,7 @@ import {ArrayDesy} from '../array/array.ts';
 import {NullDesy} from '../null/null.ts';
 import {DateDesy} from '../date/date.ts';
 
-export class MixedDesy extends Schema<any> {
+export class MixedDesy<TValue extends any = any> extends Schema<TValue> {
   static new(config: Config) {
     return new MixedDesy(config);
   }
@@ -56,7 +56,7 @@ export class MixedDesy extends Schema<any> {
     return this;
   }
 
-  oneOf(schemas: Schema<any>[]) {
+  oneOf<TValue extends Schema<any>>(schemas: TValue[]) {
     this.context.rules.push({
       name: 'mixed:one_of',
       test: (value, {path}) => {
@@ -71,7 +71,7 @@ export class MixedDesy extends Schema<any> {
         return lastError;
       },
     });
-    return this;
+    return this as MixedDesy<Infer<TValue>>;
   }
 }
 

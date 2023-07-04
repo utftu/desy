@@ -3,9 +3,11 @@ import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type Config} from '../types.ts';
 
-export class BooleanDesy extends Schema<boolean> {
-  static new(config: Config) {
-    return new BooleanDesy(config);
+export class BooleanDesy<
+  TValue extends boolean = boolean
+> extends Schema<TValue> {
+  static new<TValue extends boolean>(config: Config) {
+    return new BooleanDesy<TValue>(config);
   }
 
   static boolean(value, {path}) {
@@ -33,7 +35,8 @@ export class BooleanDesy extends Schema<boolean> {
         return '';
       },
     });
-    return this;
+
+    return this as BooleanDesy<true>;
   }
 
   false() {
@@ -46,7 +49,7 @@ export class BooleanDesy extends Schema<boolean> {
         return '';
       },
     });
-    return this;
+    return this as BooleanDesy<false>;
   }
 }
 

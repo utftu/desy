@@ -6,9 +6,9 @@ type Config = {
   context: Context;
 };
 
-export class StringDesy extends Schema<string> {
-  static new(config: Config) {
-    return new StringDesy(config);
+export class StringDesy<TValue extends string> extends Schema<TValue> {
+  static new<TValue extends string>(config: Config) {
+    return new StringDesy<TValue>(config);
   }
 
   static string(value, {path}) {
@@ -80,7 +80,7 @@ export class StringDesy extends Schema<string> {
     return this;
   }
 
-  oneOf(variants: readonly string[]) {
+  oneOf<TValue extends readonly string[]>(variants: TValue) {
     this.context.rules.push({
       name: 'string:one_of',
       test: (value: string, {path}) => {
@@ -91,7 +91,7 @@ export class StringDesy extends Schema<string> {
       },
     });
 
-    return this;
+    return this as StringDesy<TValue[number]>;
   }
 }
 

@@ -1,10 +1,17 @@
 # desy - Dead Extraordinary Simple Yup
 
-benchmark
+## key ideas
 
-![benchmark](./static/benchmark.png)
+- be `simple`
+- be as `fast` as point 1 allows
 
-### From `npm` (Node/Bun)
+## key features
+
+- Stop validating on the first error. Desy stops validating on the first error and returns it.
+- A string is an indicator. Desy returns an empty string in a valid case. In case of an error, Desy returns a string with a description of the error.
+- No throwing errors. Desy only returns an empty or non-empty string.
+
+## install
 
 ```sh
 npm install desy       # npm
@@ -12,11 +19,6 @@ yarn add desy          # yarn
 bun add desy           # bun
 pnpm add desy          # pnpm
 ```
-
-**impornat**
-
-- _In valid case desy returns empty string_
-- _On error desy returns string with error_
 
 ## Basic usage
 
@@ -69,3 +71,11 @@ const schema = d.array(
 );
 schema.validate(people);
 ```
+
+## benchmark
+
+[Object benchmark](./bench/object.ts)
+![object bench](./static/bench/object.png)
+
+[Complex benchmark](./bench/complex.ts)
+![object bench](./static/bench/complex.png)

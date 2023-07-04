@@ -9,7 +9,7 @@ function runSeveralTimes(cb, times = 100) {
   }
 }
 
-function createPeople() {
+function createPeople(valid = true) {
   let i = 0;
 
   function num() {
@@ -31,17 +31,143 @@ function createPeople() {
       active: !!(i % 2),
       name: str(),
       age: num(),
-      hobbies: array(str),
       address: {
         street: str(),
         zip: str(),
         country: str(),
       },
+      hobbies: array(str),
     };
   });
 
   return people;
 }
+
+// function createCompex() {
+//   return {
+//     data: {
+//       valid: createPeople(true),
+//       error: createPeople(false),
+//     },
+//     validators: {
+//       zod: () =>
+//         z.array(
+//           z.object({
+//             type: z.literal('person'),
+//             hair: z.enum(['blue', 'brown']),
+//             active: z.boolean(),
+//             name: z.string(),
+//             age: z.number().int(),
+//             hobbies: z.array(z.string()),
+//             address: z.object({
+//               street: z.string(),
+//               zip: z.string(),
+//               country: z.string(),
+//             }),
+//           })
+//         ),
+//       desy: () =>
+//         d.array(
+//           d.object({
+//             type: d.string().oneOf(['person']),
+//             hair: d.string().oneOf(['blue', 'brown']),
+//             active: d.boolean(),
+//             name: d.string(),
+//             age: d.number().int(),
+//             hobbies: d.array(d.string()),
+//             address: d.object({
+//               street: d.string(),
+//               zip: d.string(),
+//               country: d.string(),
+//             }),
+//           })
+//         ),
+//     },
+//   };
+// }
+
+// const complex = createCompex();
+// group('complex with error', () => {
+//   bench('zod', () => {
+//     runSeveralTimes(() => {
+//       const schema = complex.validators.zod();
+
+//       schema.safeParse(complex.data.error);
+//     });
+//   });
+//   bench('desy', () => {
+//     runSeveralTimes(() => {
+//       const schema = complex.validators.desy();
+
+//       schema.validate(complex.data.error);
+//     });
+//   });
+// });
+
+// group('complex without error', () => {
+//   bench('zod', () => {
+//     runSeveralTimes(() => {
+//       const schema = complex.validators.zod();
+
+//       schema.safeParse(complex.data.valid);
+//     });
+//   });
+//   bench('desy', () => {
+//     runSeveralTimes(() => {
+//       const schema = complex.validators.desy();
+
+//       schema.validate(complex.data.valid);
+//     });
+//   });
+// });
+
+// group('object with error', () => {
+//   const user = {
+//     name: 'aleksey',
+//     age: 24,
+//     valid: 'ERROR',
+//     address: {
+//       city: 'london',
+//       street: 'lenina',
+//     },
+//     skills: ['code', 'films'],
+//   };
+
+//   bench('zod', () => {
+//     runSeveralTimes(() => {
+//       const schema = z.object({
+//         name: z.string(),
+//         age: z.number().int(),
+//         valid: z.boolean(),
+//         address: z.object({
+//           city: z.string(),
+//           street: z.string(),
+//         }),
+//         skills: z.array(z.string()),
+//       });
+
+//       schema.safeParse(user);
+//     });
+//   });
+
+//   bench('desy', () => {
+//     runSeveralTimes(() => {
+//       const schema = d.object({
+//         name: d.string(),
+//         age: d.number().int(),
+//         valid: d.boolean(),
+//         address: d.object({
+//           city: d.string(),
+//           street: d.string(),
+//         }),
+//         skills: d.array(d.string()),
+//       });
+
+//       // @ts-ignore
+//       schema.validate(user);
+//     });
+//   });
+// });
 
 group('complex', () => {
   const people = createPeople();

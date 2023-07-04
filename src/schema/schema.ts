@@ -13,7 +13,7 @@ export abstract class Schema<TValue> {
   constructor({context}: Config) {
     this.context = context;
   }
-  validate(value: TValue, {path}: {path: string} = {path: 'Value'}) {
+  validate(value: any, {path}: {path: string} = {path: 'Value'}) {
     for (const testEntity of this.context.rules) {
       const error = testEntity.test(value, {path});
       if (error !== '') {

@@ -6,9 +6,9 @@ type Config = {
   context: Context;
 };
 
-export class StringMy extends Schema<string> {
+export class StringDesy extends Schema<string> {
   static new(config: Config) {
-    return new StringMy(config);
+    return new StringDesy(config);
   }
 
   static string(value, {path}) {
@@ -25,17 +25,18 @@ export class StringMy extends Schema<string> {
     return '';
   }
 
-  declare context: Context;
-
-  constructor({context}: {context: Context}) {
-    super({context});
-    context.rules.push({name: 'string:string', test: StringMy.string});
-    context.rules.push({name: 'string:required', test: StringMy.required});
+  constructor(config: Config) {
+    super(config);
+    this.context.rules.push({name: 'string:string', test: StringDesy.string});
+    this.context.rules.push({
+      name: 'string:required',
+      test: StringDesy.required,
+    });
   }
 
   optional() {
     this.context.rules = this.context.rules.filter(
-      ({test}) => test !== StringMy.required
+      ({test}) => test !== StringDesy.required
     );
     return this;
   }
@@ -95,5 +96,5 @@ export class StringMy extends Schema<string> {
 }
 
 export function string() {
-  return StringMy.new({context: Context.new()});
+  return StringDesy.new({context: Context.new()});
 }

@@ -43,7 +43,7 @@ function createPeople() {
   return people;
 }
 
-group('realworld', () => {
+group('complex', () => {
   const people = createPeople();
   bench('yup', () => {
     runSeveralTimes(() => {

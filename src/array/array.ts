@@ -1,7 +1,6 @@
 import {Context} from '../context/context.ts';
 import {messages} from '../messages.ts';
 import {Infer, Schema} from '../schema/schema.ts';
-import {string} from '../string/string.ts';
 import {ConfigValue} from '../types.ts';
 
 export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
@@ -11,8 +10,8 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
     return new ArrayDesy(config);
   }
 
-  constructor({value: schema, context}: ConfigValue<TSchema>) {
-    super({context});
+  constructor(config: ConfigValue<TSchema>) {
+    super(config);
 
     this.context.rules.push({
       name: 'array:array',
@@ -30,7 +29,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
 
-          const error = schema.validate(item, {
+          const error = config.value.validate(item, {
             path: path === '' ? i.toString() : `${path}[].${i}`,
           });
           if (error !== '') {

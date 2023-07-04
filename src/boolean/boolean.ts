@@ -3,9 +3,9 @@ import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type Config} from '../types.ts';
 
-export class BooleanDsy extends Schema<boolean> {
+export class BooleanDesy extends Schema<boolean> {
   static new(config: Config) {
-    return new BooleanDsy(config);
+    return new BooleanDesy(config);
   }
 
   static boolean(value, {path}) {
@@ -15,11 +15,11 @@ export class BooleanDsy extends Schema<boolean> {
     return '';
   }
 
-  constructor({context}: {context: Context}) {
-    super({context});
+  constructor(config: Config) {
+    super(config);
     this.context.rules.push({
       name: 'boolean:boolean',
-      test: BooleanDsy.boolean,
+      test: BooleanDesy.boolean,
     });
   }
 
@@ -51,5 +51,5 @@ export class BooleanDsy extends Schema<boolean> {
 }
 
 export function boolean() {
-  return BooleanDsy.new({context: Context.new()});
+  return BooleanDesy.new({context: Context.new()});
 }

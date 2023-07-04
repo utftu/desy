@@ -35,4 +35,12 @@ export const messages = {
     max: ({path, max}) => `${path} must be at most ${max} length`,
     length: ({path, length}) => `${path} has be exactly ${length} length`,
   },
+  date: {
+    date: ({path}) => `${path} must be date`,
+    min: ({path, min}) => `${path} must be later than ${min}`,
+    max: ({path, max}) => `${path} must be at earlier than ${max}`,
+  },
+  null: {
+    null: ({path}) => `${path} must be null`,
+  },
 };

@@ -11,11 +11,11 @@ type PreparedTypes<TValue extends ObjectDsyValue> = {
   [K in keyof TValue]: Infer<TValue[K]>;
 };
 
-export class ObjectDsy<TValue extends ObjectDsyValue> extends Schema<
+export class ObjectDesy<TValue extends ObjectDsyValue> extends Schema<
   PreparedTypes<TValue>
 > {
   static new<TValue extends ObjectDsyValue>(config: ConfigValue<TValue>) {
-    return new ObjectDsy(config);
+    return new ObjectDesy(config);
   }
 
   static object(value, {path}) {
@@ -25,13 +25,13 @@ export class ObjectDsy<TValue extends ObjectDsyValue> extends Schema<
     return '';
   }
 
-  constructor({value, context}: ConfigValue<TValue>) {
-    super({context});
-    context.rules.push({name: 'object:object', test: ObjectDsy.object});
-    context.rules.push({
+  constructor(config: ConfigValue<TValue>) {
+    super(config);
+    this.context.rules.push({name: 'object:object', test: ObjectDesy.object});
+    this.context.rules.push({
       name: 'object:strict',
       test: (currentValue, {path}) => {
-        const valueKeys = Object.keys(value);
+        const valueKeys = Object.keys(config.value);
         const currentValueKeys = Object.keys(currentValue);
 
         for (let i = 0; i < valueKeys.length; i++) {
@@ -46,11 +46,11 @@ export class ObjectDsy<TValue extends ObjectDsyValue> extends Schema<
         return '';
       },
     });
-    context.rules.push({
+    this.context.rules.push({
       name: 'object:fields',
       test: (currentValue, {path}) => {
-        for (const key in value) {
-          const schema = value[key];
+        for (const key in config.value) {
+          const schema = config.value[key];
           const error = schema.validate(currentValue[key], {
             path: path === '' ? key : `${path}.${key}`,
           });
@@ -72,7 +72,7 @@ export class ObjectDsy<TValue extends ObjectDsyValue> extends Schema<
 }
 
 export function object<TValue extends ObjectDsyValue>(value: TValue) {
-  return ObjectDsy.new({
+  return ObjectDesy.new({
     value,
     context: Context.new(),
   });

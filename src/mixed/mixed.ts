@@ -1,20 +1,18 @@
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
-import {StringMy} from '../string/string.ts';
-import {type ObjectDsyValue, ObjectDsy} from '../object/object.ts';
+import {StringDesy as StringDesy} from '../string/string.ts';
+import {type ObjectDsyValue, ObjectDesy} from '../object/object.ts';
 import {messages} from '../messages.ts';
-import {BooleanDsy} from '../boolean/boolean.ts';
+import {BooleanDesy} from '../boolean/boolean.ts';
 import {type Config} from '../types.ts';
 import {NumberDesy} from '../number/number.ts';
 import {ArrayDesy} from '../array/array.ts';
+import {NullDesy} from '../null/null.ts';
+import {DateDesy} from '../date/date.ts';
 
 export class MixedDesy extends Schema<any> {
   static new(config: Config) {
     return new MixedDesy(config);
-  }
-
-  constructor({context}: Config) {
-    super({context});
   }
 
   array<TValue extends Schema<any>>(schema: TValue) {
@@ -26,15 +24,23 @@ export class MixedDesy extends Schema<any> {
   }
 
   object<TValue extends ObjectDsyValue>(shape: TValue) {
-    return ObjectDsy.new({context: this.context, value: shape});
+    return ObjectDesy.new({context: this.context, value: shape});
   }
 
   boolean() {
-    return BooleanDsy.new({context: this.context});
+    return BooleanDesy.new({context: this.context});
   }
 
   string() {
-    return StringMy.new({context: this.context});
+    return StringDesy.new({context: this.context});
+  }
+
+  date() {
+    return DateDesy.new({context: this.context});
+  }
+
+  null() {
+    return NullDesy.new({context: this.context});
   }
 
   notVoid() {

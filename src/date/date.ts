@@ -1,9 +1,15 @@
+import {Context} from '../context/context.ts';
+import {messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Config} from '../types';
 
 type DateValue = string | number | Date;
 
-export class DateDesy extends Schema<DateValue> {
+export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
+  static new(config: Config) {
+    return new DateDesy(config);
+  }
+
   static date(value, {path}) {
     const valueType = typeof value;
     if (
@@ -11,7 +17,7 @@ export class DateDesy extends Schema<DateValue> {
       valueType !== 'string' &&
       !(value instanceof Date)
     ) {
-      return 'error';
+      return messages.date.date({path});
     }
 
     const date = new Date(value);
@@ -19,14 +25,14 @@ export class DateDesy extends Schema<DateValue> {
     const valid = !isNaN(date.getTime());
 
     if (!valid) {
-      return `${path} must be valid date`;
+      return messages.date.date({path});
     }
 
     return '';
   }
 
-  constructor({context}: Config) {
-    super({context});
+  constructor(config: Config) {
+    super(config);
 
     this.context.rules.push({
       name: 'date:date',
@@ -38,11 +44,31 @@ export class DateDesy extends Schema<DateValue> {
     this.context.rules.push({
       name: 'date:min',
       test: (value, {path}) => {
-        if (new Date(value) > new Date(min)) {
-          return 'too late';
+        const minDate = new Date(min);
+        if (new Date(value).getTime() < minDate.getTime()) {
+          return messages.date.min({path, min: minDate.toISOString()});
         }
         return '';
       },
     });
+    return this;
   }
+
+  max(max: DateValue) {
+    this.context.rules.push({
+      name: 'date:min',
+      test: (value, {path}) => {
+        const maxDate = new Date(max);
+        if (new Date(value).getTime() > maxDate.getTime()) {
+          return messages.date.max({path, max: maxDate.toISOString()});
+        }
+        return '';
+      },
+    });
+    return this;
+  }
+}
+
+export function date() {
+  return DateDesy.new({context: Context.new()});
 }

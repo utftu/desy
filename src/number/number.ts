@@ -15,11 +15,9 @@ export class NumberDesy extends Schema<number> {
     return '';
   }
 
-  declare context: Context;
-
-  constructor({context}: {context: Context}) {
-    super({context});
-    context.rules.push({name: 'number:number', test: NumberDesy.number});
+  constructor(config: Config) {
+    super(config);
+    this.context.rules.push({name: 'number:number', test: NumberDesy.number});
   }
 
   min(min) {

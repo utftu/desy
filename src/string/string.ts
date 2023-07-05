@@ -1,6 +1,7 @@
 import {messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
+import {InferDesy} from '../desy.ts';
 
 type Config = {
   context: Context;
@@ -98,3 +99,12 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 export function string() {
   return StringDesy.new({context: Context.new()});
 }
+
+// const schema = string().test<'24'>((value) => {
+//   if (value != 'hello') {
+//     return 'not hello';
+//   }
+//   return '';
+// });
+
+// type A = InferDesy<typeof schema>;

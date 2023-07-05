@@ -33,8 +33,8 @@ export abstract class Schema<TValue> {
   //   return '';
   // }
 
-  test(cb: Test) {
+  test<TValue extends (typeof this)['types']>(cb: Test) {
     this.context.rules.push({name: 'custom', test: cb});
-    return this;
+    return this as unknown as Schema<TValue>;
   }
 }

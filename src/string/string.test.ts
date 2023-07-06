@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'bun:test';
 import {string} from './string.ts';
 
-describe.only('string', () => {
+describe('string', () => {
   it('string:string', () => {
     const schema = string();
 

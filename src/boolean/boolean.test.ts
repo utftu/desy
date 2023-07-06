@@ -1,7 +1,7 @@
 import {describe, it, expect} from 'bun:test';
 import {boolean} from './boolean.ts';
 
-describe.only('boolean', () => {
+describe('boolean', () => {
   it('boolean:boolean', () => {
     expect(boolean().validate(true)).toBe('');
     expect(boolean().validate(false)).toBe('');

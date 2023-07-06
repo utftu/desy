@@ -25,7 +25,7 @@ describe('object', () => {
     });
     expect(error).not.toBe('');
   });
-  it.only('notStrict', () => {
+  it('notStrict', () => {
     const schema = object({name: string()}).notStrict();
     const valid = schema.validate({
       name: 'aleksey',

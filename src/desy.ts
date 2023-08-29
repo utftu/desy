@@ -7,6 +7,7 @@ import {mixed} from './mixed/mixed.ts';
 import {date} from './date/date.ts';
 import {nullDesy} from './null/null.ts';
 import {type Schema, type Infer} from './schema/schema.ts';
+export {type Schema} from './schema/schema.ts';
 
 export type InferDesy<T extends Schema<any>> = Infer<T>;
 

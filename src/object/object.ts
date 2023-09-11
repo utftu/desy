@@ -16,6 +16,38 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 const strictName = 'object:strict';
 const fieldsName = 'object:fields';
 
+const testObject = (value: any, {path}: DefaultMessageProps) => {
+  if (typeof value !== 'object') {
+    return messages.object.object({path});
+  }
+  return '';
+};
+
+const createTestObjectStrict = (props: {
+  exclude: string[];
+  value: ObjectDsyValue;
+}) => {
+  return (currentValue: Object, {path}: DefaultMessageProps) => {
+    const valueKeys = Object.keys(props.value);
+    const currentValueKeys = Object.keys(currentValue);
+
+    for (let i = 0; i < valueKeys.length; i++) {
+      if (
+        valueKeys[i] !== currentValueKeys[i] &&
+        !props.exclude.includes(valueKeys[i])
+      ) {
+        return messages.object.no_property({path: valueKeys[i]});
+      }
+    }
+
+    if (valueKeys.length - props.exclude.length !== currentValueKeys.length) {
+      return messages.object.unknown({path});
+    }
+
+    return '';
+  };
+};
+
 export class ObjectDesy<
   TValue extends ObjectDsyValue,
   TValueTypes = PreparedTypes<TValue>,
@@ -24,47 +56,15 @@ export class ObjectDesy<
     return new ObjectDesy(config);
   }
 
-  static object(value: any, {path}: DefaultMessageProps) {
-    if (typeof value !== 'object') {
-      return messages.object.object({path});
-    }
-    return '';
-  }
-
-  static createTestObjectStrict(props: {
-    exclude: string[];
-    value: ObjectDsyValue;
-  }) {
-    return (currentValue: Object, {path}: DefaultMessageProps) => {
-      const valueKeys = Object.keys(props.value);
-      const currentValueKeys = Object.keys(currentValue);
-
-      for (let i = 0; i < valueKeys.length; i++) {
-        if (
-          valueKeys[i] !== currentValueKeys[i] &&
-          !props.exclude.includes(valueKeys[i])
-        ) {
-          return messages.object.no_property({path: valueKeys[i]});
-        }
-      }
-
-      if (valueKeys.length - props.exclude.length !== currentValueKeys.length) {
-        return messages.object.unknown({path});
-      }
-
-      return '';
-    };
-  }
-
   value: TValue;
 
   constructor(config: ConfigValue<TValue>) {
     super(config);
     this.value = config.value;
-    this.context.rules.push({name: 'object:object', test: ObjectDesy.object});
+    this.context.rules.push({name: 'object:object', test: testObject});
     this.context.rules.push({
       name: 'object:strict',
-      test: ObjectDesy.createTestObjectStrict({
+      test: createTestObjectStrict({
         exclude: [],
         value: config.value,
       }),
@@ -131,7 +131,7 @@ export class ObjectDesy<
     if (strictIdx !== undefined) {
       this.context.rules[strictIdx] = {
         name: 'object:strict',
-        test: ObjectDesy.createTestObjectStrict({
+        test: createTestObjectStrict({
           exclude: optionalFields,
           value: this.value,
         }),

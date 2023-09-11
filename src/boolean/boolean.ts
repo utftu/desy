@@ -1,16 +1,16 @@
-import {messages} from '../messages.ts';
+import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type Config} from '../types.ts';
 
 export class BooleanDesy<
-  TValue extends boolean = boolean
+  TValue extends boolean = boolean,
 > extends Schema<TValue> {
   static new<TValue extends boolean>(config: Config) {
     return new BooleanDesy<TValue>(config);
   }
 
-  static boolean(value, {path}) {
+  static boolean(value: any, {path}: DefaultMessageProps) {
     if (typeof value !== 'boolean') {
       return messages.boolean.boolean({path});
     }

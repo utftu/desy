@@ -1,4 +1,4 @@
-import {messages} from '../messages.ts';
+import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {InferDesy} from '../desy.ts';
@@ -12,14 +12,14 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     return new StringDesy<TValue>(config);
   }
 
-  static string(value, {path}) {
+  static string(value: any, {path}: DefaultMessageProps) {
     if (typeof value !== 'string') {
       return messages.string.string({path});
     }
     return '';
   }
 
-  static required(value, {path}) {
+  static required(value: string, {path}: DefaultMessageProps) {
     if (value === '') {
       return messages.string.requred({path});
     }
@@ -37,7 +37,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 
   optional() {
     this.context.rules = this.context.rules.filter(
-      ({test}) => test !== StringDesy.required
+      ({test}) => test !== StringDesy.required,
     );
     return this;
   }
@@ -86,7 +86,11 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
       name: 'string:one_of',
       test: (value: string, {path}) => {
         if (!variants.includes(value)) {
-          return messages.string.one_of({path, variants, value});
+          return messages.string.one_of({
+            path,
+            variants: variants as any,
+            value,
+          });
         }
         return '';
       },
@@ -99,12 +103,3 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 export function string() {
   return StringDesy.new({context: Context.new()});
 }
-
-// const schema = string().test<'24'>((value) => {
-//   if (value != 'hello') {
-//     return 'not hello';
-//   }
-//   return '';
-// });
-
-// type A = InferDesy<typeof schema>;

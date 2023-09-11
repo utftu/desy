@@ -8,7 +8,7 @@ export class NumberDesy extends Schema<number> {
     return new NumberDesy(config);
   }
 
-  static number(value, {path}) {
+  static number(value: any, {path}: {path: string}) {
     if (typeof value !== 'number') {
       return messages.number.number({path});
     }
@@ -20,9 +20,9 @@ export class NumberDesy extends Schema<number> {
     this.context.rules.push({name: 'number:number', test: NumberDesy.number});
   }
 
-  min(min) {
+  min(min: number) {
     this.context.rules.push({
-      name: 'string:min',
+      name: 'number:min',
       test: (value, {path}) => {
         if (value < min) {
           return messages.number.min({path, min});
@@ -33,9 +33,9 @@ export class NumberDesy extends Schema<number> {
     return this;
   }
 
-  max(max) {
+  max(max: number) {
     this.context.rules.push({
-      name: 'string:max',
+      name: 'number:max',
       test: (value, {path}) => {
         if (value > max) {
           return messages.number.max({path, max});
@@ -48,7 +48,7 @@ export class NumberDesy extends Schema<number> {
 
   int() {
     this.context.rules.push({
-      name: 'string:int',
+      name: 'number:int',
       test: (value, {path}) => {
         if (!Number.isInteger(value)) {
           return messages.number.int({path});
@@ -61,7 +61,7 @@ export class NumberDesy extends Schema<number> {
 
   float() {
     this.context.rules.push({
-      name: 'string:float',
+      name: 'number:float',
       test: (value, {path}) => {
         if (Number.isInteger(value)) {
           return messages.number.float({path});

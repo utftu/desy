@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "bun build ./src/desy.ts --outdir ./dist && bun run types",
-    "types": "bunx tsc --project tsconfig.types.json"
+    "types": "bunx tsc --project tsconfig.types.json",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "bun-types": "^0.6.0",
@@ -18,5 +19,8 @@
     "zod": "^3.21.4",
     "typescript": "^5.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "prettier": "^3.0.3"
+  }
 }

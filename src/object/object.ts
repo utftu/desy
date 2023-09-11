@@ -1,7 +1,7 @@
 import {Schema, type Infer} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type ConfigValue} from '../types.ts';
-import {messages} from '../messages.ts';
+import {DefaultMessageProps, messages} from '../messages.ts';
 import {string} from '../string/string.ts';
 import {number} from '../number/number.ts';
 
@@ -11,45 +11,68 @@ type PreparedTypes<TValue extends ObjectDsyValue> = {
   [K in keyof TValue]: Infer<TValue[K]>;
 };
 
-export class ObjectDesy<TValue extends ObjectDsyValue> extends Schema<
-  PreparedTypes<TValue>
-> {
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+const strictName = 'object:strict';
+const fieldsName = 'object:fields';
+
+export class ObjectDesy<
+  TValue extends ObjectDsyValue,
+  TValueTypes = PreparedTypes<TValue>,
+> extends Schema<TValueTypes> {
   static new<TValue extends ObjectDsyValue>(config: ConfigValue<TValue>) {
     return new ObjectDesy(config);
   }
 
-  static object(value, {path}) {
+  static object(value: any, {path}: DefaultMessageProps) {
     if (typeof value !== 'object') {
       return messages.object.object({path});
     }
     return '';
   }
 
+  static createTestObjectStrict(props: {
+    exclude: string[];
+    value: ObjectDsyValue;
+  }) {
+    return (currentValue: Object, {path}: DefaultMessageProps) => {
+      const valueKeys = Object.keys(props.value);
+      const currentValueKeys = Object.keys(currentValue);
+
+      for (let i = 0; i < valueKeys.length; i++) {
+        if (
+          valueKeys[i] !== currentValueKeys[i] &&
+          !props.exclude.includes(valueKeys[i])
+        ) {
+          return messages.object.no_property({path: valueKeys[i]});
+        }
+      }
+
+      if (valueKeys.length - props.exclude.length !== currentValueKeys.length) {
+        return messages.object.unknown({path});
+      }
+
+      return '';
+    };
+  }
+
+  value: TValue;
+
   constructor(config: ConfigValue<TValue>) {
     super(config);
+    this.value = config.value;
     this.context.rules.push({name: 'object:object', test: ObjectDesy.object});
     this.context.rules.push({
       name: 'object:strict',
-      test: (currentValue, {path}) => {
-        const valueKeys = Object.keys(config.value);
-        const currentValueKeys = Object.keys(currentValue);
-
-        for (let i = 0; i < valueKeys.length; i++) {
-          if (valueKeys[i] !== currentValueKeys[i]) {
-            return messages.object.no_property({path: valueKeys[i]});
-          }
-        }
-
-        if (valueKeys.length !== currentValueKeys.length) {
-          return messages.object.unknown({path});
-        }
-        return '';
-      },
+      test: ObjectDesy.createTestObjectStrict({
+        exclude: [],
+        value: config.value,
+      }),
     });
     this.context.rules.push({
       name: 'object:fields',
       test: (currentValue, {path}) => {
-        for (const key in config.value) {
+        for (const key in this.value) {
           const schema = config.value[key];
           const error = schema.validate(currentValue[key], {
             path: path === '' ? key : `${path}.${key}`,
@@ -64,12 +87,110 @@ export class ObjectDesy<TValue extends ObjectDsyValue> extends Schema<
   }
 
   notStrict() {
-    this.context.rules = this.context.rules.filter(
-      ({name}) => name !== 'object:strict'
+    const strictIdx = this.context.rules.findIndex(
+      ({name}) => name === strictName,
     );
-    return this;
+    if (strictIdx !== undefined) {
+      this.context.rules.splice(strictIdx, 1);
+    }
+
+    const fieldsIdx = this.context.rules.findIndex(
+      ({name}) => name === fieldsName,
+    );
+    if (fieldsIdx !== undefined) {
+      this.context.rules[fieldsIdx] = {
+        name: fieldsName,
+        test: (currentValue, {path}) => {
+          for (const key in this.value) {
+            const schema = this.value[key];
+
+            if (!(key in this.value)) {
+              continue;
+            }
+            const error = schema.validate(currentValue[key], {
+              path: path === '' ? key : `${path}.${key}`,
+            });
+            if (error !== '') {
+              return error;
+            }
+          }
+          return '';
+        },
+      };
+    }
+
+    return this as ObjectDesy<TValue, Partial<(typeof this)['types']>>;
+  }
+
+  optionalFields<TValueLocal extends keyof TValueTypes & string = any>(
+    optionalFields: TValueLocal[],
+  ) {
+    const strictIdx = this.context.rules.findIndex(
+      ({name}) => name === strictName,
+    );
+    if (strictIdx !== undefined) {
+      this.context.rules[strictIdx] = {
+        name: 'object:strict',
+        test: ObjectDesy.createTestObjectStrict({
+          exclude: optionalFields,
+          value: this.value,
+        }),
+      };
+    }
+    const fieldsIdx = this.context.rules.findIndex(
+      ({name}) => name === fieldsName,
+    );
+    if (fieldsIdx !== undefined) {
+      this.context.rules[fieldsIdx] = {
+        name: fieldsName,
+        test: (currentValue, {path}) => {
+          for (const key in this.value) {
+            const schema = this.value[key];
+
+            if (!(key in currentValue) && optionalFields.includes(key as any)) {
+              continue;
+            }
+            const error = schema.validate(currentValue[key], {
+              path: path === '' ? key : `${path}.${key}`,
+            });
+            if (error !== '') {
+              return error;
+            }
+          }
+          return '';
+        },
+      };
+    }
+
+    return this as ObjectDesy<
+      TValue,
+      PartialBy<(typeof this)['types'], TValueLocal>
+    >;
   }
 }
+{
+  type User = {
+    name: string;
+    age: number;
+  };
+  const exclude: (keyof User)[] = ['name'];
+
+  type User2 = PartialBy<User, (typeof exclude)[number]>;
+
+  type Name = User2['age'];
+  type Age = User2['age'];
+
+  // type AAAAA = (typeof a)[number];
+}
+
+// class PartialObjectDesy<TValue extends ObjectDsyValue> extends ObjectDesy<
+//   Partial<TValue>
+// > {
+//   constructor(config: ConfigValue<Partial<TValue>>) {
+//     super(config);
+//   }
+// }
+// class ObjectDesyPartial<TValue> extends ObjectDesy<TValue> {}
 
 export function object<TValue extends ObjectDsyValue>(value: TValue) {
   return ObjectDesy.new({
@@ -81,6 +202,26 @@ export function object<TValue extends ObjectDsyValue>(value: TValue) {
 // const user = object({
 //   name: string(),
 //   age: number(),
-// });
+// }).notStrict();
 
-// type User = Infer<typeof user>;
+const user = object({
+  name: string(),
+  age: number(),
+}).optionalFields(['name']);
+
+type User = Infer<typeof user>;
+
+type Name = User['name'];
+type Age = User['age'];
+
+type C = {
+  name: string;
+  age: number;
+};
+
+// type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+type C1 = PartialBy<C, 'age' | 'name'>;
+
+type C2 = C1['name'];
+type C3 = C1['age'];

@@ -1,5 +1,5 @@
 import {Context} from '../context/context.ts';
-import {messages} from '../messages.ts';
+import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Config} from '../types';
 
@@ -10,7 +10,7 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
     return new DateDesy(config);
   }
 
-  static date(value, {path}) {
+  static date(value: any, {path}: DefaultMessageProps) {
     const valueType = typeof value;
     if (
       valueType !== 'number' &&

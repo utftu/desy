@@ -1,46 +1,62 @@
+export type DefaultMessageProps = {path: string};
+
+type Min = DefaultMessageProps & {min: number};
+type Max = DefaultMessageProps & {max: number};
+type Length = DefaultMessageProps & {length: number};
+
 export const messages = {
   string: {
-    string: ({path}) => `${path} must be string`,
-    requred: ({path}) => `${path} must be non empty string`,
-    min: ({path, min}) => `${path} must be at least ${min} characters`,
-    max: ({path, max}) => `${path} must be at most ${max} characters`,
-    length: ({path, length}) => `${path} has be exactly ${length} characters`,
-    one_of: ({path, variants, value}) =>
+    string: ({path}: DefaultMessageProps) => `${path} must be string`,
+    requred: ({path}: DefaultMessageProps) =>
+      `${path} must be non empty string`,
+    min: ({path, min}: Min) => `${path} must be at least ${min} characters`,
+    max: ({path, max}: Max) => `${path} must be at most ${max} characters`,
+    length: ({path, length}: Length) =>
+      `${path} has be exactly ${length} characters`,
+    one_of: ({
+      path,
+      variants,
+      value,
+    }: DefaultMessageProps & {variants: string[]; value: string}) =>
       `${path} must have one of ${variants.join(', ')} but has ${value}`,
   },
   object: {
-    object: ({path}) => `${path} must be object`,
-    no_property: ({path}) => `${path} must be field`,
-    unknown: ({path}) => `${path} has uknown properties`,
+    object: ({path}: DefaultMessageProps) => `${path} must be object`,
+    no_property: ({path}: DefaultMessageProps) => `${path} must be field`,
+    unknown: ({path}: DefaultMessageProps) => `${path} has uknown properties`,
   },
   mixed: {
-    not_void: ({path}) => `${path} must be not void`,
+    not_void: ({path}: DefaultMessageProps) => `${path} must be not void`,
   },
   boolean: {
-    boolean: ({path}) => `${path} must be boolean`,
-    true: ({path}) => `${path} must be true`,
-    false: ({path}) => `${path} must be false`,
+    boolean: ({path}: DefaultMessageProps) => `${path} must be boolean`,
+    true: ({path}: DefaultMessageProps) => `${path} must be true`,
+    false: ({path}: DefaultMessageProps) => `${path} must be false`,
   },
   number: {
-    number: ({path}) => `${path} must be number`,
-    min: ({path, min}) => `${path} must be greater than or equal to ${min}`,
-    max: ({path, max}) => `${path} must be less than or equal to ${max}`,
-    int: ({path}) => `${path} must be integer`,
-    float: ({path}) => `${path} must be float`,
+    number: ({path}: DefaultMessageProps) => `${path} must be number`,
+    min: ({path, min}: Min) =>
+      `${path} must be greater than or equal to ${min}`,
+    max: ({path, max}: Max) => `${path} must be less than or equal to ${max}`,
+    int: ({path}: DefaultMessageProps) => `${path} must be integer`,
+    float: ({path}: DefaultMessageProps) => `${path} must be float`,
   },
   array: {
-    array: ({path}) => `${path} must be array`,
-    items: ({path}) => `${path} must has valid items`,
-    min: ({path, min}) => `${path} must be at least ${min} length`,
-    max: ({path, max}) => `${path} must be at most ${max} length`,
-    length: ({path, length}) => `${path} has be exactly ${length} length`,
+    array: ({path}: DefaultMessageProps) => `${path} must be array`,
+    items: ({path}: DefaultMessageProps) => `${path} must has valid items`,
+    min: ({path, min}: Min) => `${path} must be at least ${min} length`,
+    max: ({path, max}: Max) => `${path} must be at most ${max} length`,
+    length: ({path, length}: Length) =>
+      `${path} has be exactly ${length} length`,
   },
   date: {
-    date: ({path}) => `${path} must be date`,
-    min: ({path, min}) => `${path} must be later than ${min}`,
-    max: ({path, max}) => `${path} must be at earlier than ${max}`,
+    date: ({path}: DefaultMessageProps) => `${path} must be date`,
+    min: ({path, min}: DefaultMessageProps & {min: string}) =>
+      `${path} must be later than ${min}`,
+    max: ({path, max}: DefaultMessageProps & {max: string}) =>
+      `${path} must be at earlier than ${max}`,
   },
   null: {
-    null: ({path}) => `${path} must be null`,
+    null: ({path}: DefaultMessageProps) => `${path} must be null`,
   },
 };

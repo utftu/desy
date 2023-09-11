@@ -12,7 +12,6 @@ describe('object', () => {
     const schema = object({name: string()});
     const error = schema.validate({
       name: 'aleksey',
-      //@ts-ignore
       age: 23,
     });
     expect(error).not.toBe('');
@@ -20,7 +19,6 @@ describe('object', () => {
   it('object:fields', () => {
     const schema = object({name: string()});
     const error = schema.validate({
-      //@ts-ignore
       name: 23,
     });
     expect(error).not.toBe('');
@@ -29,9 +27,13 @@ describe('object', () => {
     const schema = object({name: string()}).notStrict();
     const valid = schema.validate({
       name: 'aleksey',
-      //@ts-ignore
       age: 25,
     });
+    expect(valid).toBe('');
+  });
+  it('optionalFields', () => {
+    const schema = object({name: string()}).optionalFields(['name']);
+    const valid = schema.validate({});
     expect(valid).toBe('');
   });
 });

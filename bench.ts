@@ -207,7 +207,7 @@ group('complex', () => {
             zip: z.string(),
             country: z.string(),
           }),
-        })
+        }),
       );
 
       schema.parse(people);
@@ -228,7 +228,7 @@ group('complex', () => {
             zip: d.string(),
             country: d.string(),
           }),
-        })
+        }),
       );
       schema.validate(people);
     });

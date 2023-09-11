@@ -76,7 +76,7 @@ function createCompexBench() {
               zip: z.string(),
               country: z.string(),
             }),
-          })
+          }),
         ),
       desy: () =>
         d.array(
@@ -92,7 +92,7 @@ function createCompexBench() {
               zip: d.string(),
               country: d.string(),
             }),
-          })
+          }),
         ),
     },
   };

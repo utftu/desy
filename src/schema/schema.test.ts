@@ -6,7 +6,7 @@ describe('schema', () => {
   it('test()', () => {
     // @ts-ignore
     let schema = new Schema({context: Context.new()});
-    schema = schema.test((value) => {
+    schema = schema.test((value: any) => {
       if (value !== 'hello') {
         return 'error';
       }

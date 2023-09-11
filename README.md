@@ -67,7 +67,7 @@ const schema = d.array(
       zip: d.string(),
       country: d.string(),
     }),
-  })
+  }),
 );
 schema.validate(people);
 ```

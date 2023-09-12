@@ -1,10 +1,11 @@
 import {Context, Test} from '../context/context.ts';
+import {DeepCopy} from '../types.ts';
 
 type Config = {
   context: Context;
 };
 
-export type Infer<TType extends Schema<any>> = TType['types'];
+export type Infer<TType extends Schema<any>> = DeepCopy<TType['types']>;
 
 export abstract class Schema<TValue> {
   types!: TValue;

@@ -3,6 +3,13 @@ import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type Config} from '../types.ts';
 
+const testBoolean = (currentValue: any, {path}: DefaultMessageProps) => {
+  if (typeof currentValue !== 'boolean') {
+    return messages.boolean.boolean({path});
+  }
+  return '';
+};
+
 export class BooleanDesy<
   TValue extends boolean = boolean,
 > extends Schema<TValue> {
@@ -10,18 +17,11 @@ export class BooleanDesy<
     return new BooleanDesy<TValue>(config);
   }
 
-  static boolean(value: any, {path}: DefaultMessageProps) {
-    if (typeof value !== 'boolean') {
-      return messages.boolean.boolean({path});
-    }
-    return '';
-  }
-
   constructor(config: Config) {
     super(config);
     this.context.rules.push({
       name: 'boolean:boolean',
-      test: BooleanDesy.boolean,
+      test: testBoolean,
     });
   }
 

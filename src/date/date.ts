@@ -5,30 +5,30 @@ import {Config} from '../types';
 
 type DateValue = string | number | Date;
 
+const testDate = (value: any, {path}: DefaultMessageProps) => {
+  const valueType = typeof value;
+  if (
+    valueType !== 'number' &&
+    valueType !== 'string' &&
+    !(value instanceof Date)
+  ) {
+    return messages.date.date({path});
+  }
+
+  const date = new Date(value);
+
+  const valid = !isNaN(date.getTime());
+
+  if (!valid) {
+    return messages.date.date({path});
+  }
+
+  return '';
+};
+
 export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
   static new(config: Config) {
     return new DateDesy(config);
-  }
-
-  static date(value: any, {path}: DefaultMessageProps) {
-    const valueType = typeof value;
-    if (
-      valueType !== 'number' &&
-      valueType !== 'string' &&
-      !(value instanceof Date)
-    ) {
-      return messages.date.date({path});
-    }
-
-    const date = new Date(value);
-
-    const valid = !isNaN(date.getTime());
-
-    if (!valid) {
-      return messages.date.date({path});
-    }
-
-    return '';
   }
 
   constructor(config: Config) {
@@ -36,7 +36,7 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
 
     this.context.rules.push({
       name: 'date:date',
-      test: DateDesy.date,
+      test: testDate,
     });
   }
 

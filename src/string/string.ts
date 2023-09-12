@@ -1,7 +1,6 @@
 import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
-import {InferDesy} from '../desy.ts';
 
 type Config = {
   context: Context;

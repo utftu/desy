@@ -1,7 +1,14 @@
 import {Context} from '../context/context.ts';
-import {messages} from '../messages.ts';
+import {DefaultMessageProps, messages} from '../messages.ts';
 import {Infer, Schema} from '../schema/schema.ts';
 import {ConfigValue} from '../types.ts';
+
+const testArray = (currentValue: any, {path}: DefaultMessageProps) => {
+  if (!Array.isArray(currentValue)) {
+    return messages.array.array({path});
+  }
+  return '';
+};
 
 export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
   Infer<TSchema>[]
@@ -15,12 +22,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
 
     this.context.rules.push({
       name: 'array:array',
-      test: (currentValue, {path}) => {
-        if (!Array.isArray(currentValue)) {
-          return messages.array.array({path});
-        }
-        return '';
-      },
+      test: testArray,
     });
 
     this.context.rules.push({

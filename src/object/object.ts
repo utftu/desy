@@ -168,29 +168,6 @@ export class ObjectDesy<
     >;
   }
 }
-{
-  type User = {
-    name: string;
-    age: number;
-  };
-  const exclude: (keyof User)[] = ['name'];
-
-  type User2 = PartialBy<User, (typeof exclude)[number]>;
-
-  type Name = User2['age'];
-  type Age = User2['age'];
-
-  // type AAAAA = (typeof a)[number];
-}
-
-// class PartialObjectDesy<TValue extends ObjectDsyValue> extends ObjectDesy<
-//   Partial<TValue>
-// > {
-//   constructor(config: ConfigValue<Partial<TValue>>) {
-//     super(config);
-//   }
-// }
-// class ObjectDesyPartial<TValue> extends ObjectDesy<TValue> {}
 
 export function object<TValue extends ObjectDsyValue>(value: TValue) {
   return ObjectDesy.new({
@@ -198,30 +175,3 @@ export function object<TValue extends ObjectDsyValue>(value: TValue) {
     context: Context.new(),
   });
 }
-
-// const user = object({
-//   name: string(),
-//   age: number(),
-// }).notStrict();
-
-const user = object({
-  name: string(),
-  age: number(),
-}).optionalFields(['name']);
-
-type User = Infer<typeof user>;
-
-type Name = User['name'];
-type Age = User['age'];
-
-type C = {
-  name: string;
-  age: number;
-};
-
-// type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-type C1 = PartialBy<C, 'age' | 'name'>;
-
-type C2 = C1['name'];
-type C3 = C1['age'];

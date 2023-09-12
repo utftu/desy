@@ -1,23 +1,23 @@
-import {messages} from '../messages.ts';
+import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {Config} from '../types.ts';
+
+const testNumber = (value: any, {path}: DefaultMessageProps) => {
+  if (typeof value !== 'number') {
+    return messages.number.number({path});
+  }
+  return '';
+};
 
 export class NumberDesy extends Schema<number> {
   static new(config: Config) {
     return new NumberDesy(config);
   }
 
-  static number(value: any, {path}: {path: string}) {
-    if (typeof value !== 'number') {
-      return messages.number.number({path});
-    }
-    return '';
-  }
-
   constructor(config: Config) {
     super(config);
-    this.context.rules.push({name: 'number:number', test: NumberDesy.number});
+    this.context.rules.push({name: 'number:number', test: testNumber});
   }
 
   min(min: number) {

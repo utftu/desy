@@ -2,9 +2,6 @@ import {Schema, type Infer} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type ConfigValue} from '../types.ts';
 import {DefaultMessageProps, messages} from '../messages.ts';
-import {string} from '../string/string.ts';
-import {number} from '../number/number.ts';
-
 export type ObjectDsyValue = Record<string, Schema<any>>;
 
 type PreparedTypes<TValue extends ObjectDsyValue> = {

@@ -11,4 +11,4 @@ export type ConfigValue<TValue> = {
 
 export type DeepCopy<T> = {
   [K in keyof T]: T[K] extends Record<string, any> ? DeepCopy<T[K]> : T[K];
-};
+} & {};

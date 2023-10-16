@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'bun:test';
 import {object} from './object.ts';
 import {string} from '../string/string.ts';
+import {messages} from '../messages.ts';
 
 describe('object', () => {
   it('object:object', () => {
@@ -35,5 +36,13 @@ describe('object', () => {
     const schema = object({name: string()}).optionalFields(['name']);
     const valid = schema.validate({});
     expect(valid).toBe('');
+  });
+  it.only('unknown', () => {
+    const schema = object({name: string()});
+    const error = schema.validate({
+      fullName: 'Smith',
+      name: 'John',
+    });
+    expect(error).toBe(messages.object.unknown({path: 'Value'}));
   });
 });

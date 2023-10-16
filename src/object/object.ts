@@ -28,6 +28,10 @@ const createTestObjectStrict = (props: {
     const valueKeys = Object.keys(props.value);
     const currentValueKeys = Object.keys(currentValue);
 
+    if (valueKeys.length - props.exclude.length !== currentValueKeys.length) {
+      return messages.object.unknown({path});
+    }
+
     for (let i = 0; i < valueKeys.length; i++) {
       if (
         valueKeys[i] !== currentValueKeys[i] &&
@@ -35,10 +39,6 @@ const createTestObjectStrict = (props: {
       ) {
         return messages.object.no_property({path: valueKeys[i]});
       }
-    }
-
-    if (valueKeys.length - props.exclude.length !== currentValueKeys.length) {
-      return messages.object.unknown({path});
     }
 
     return '';

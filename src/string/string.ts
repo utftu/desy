@@ -102,3 +102,5 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 export function string() {
   return StringDesy.new({context: Context.new()});
 }
+
+const a = string().oneOf(['hello'] as const);

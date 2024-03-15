@@ -14,10 +14,7 @@
 ## install
 
 ```sh
-npm install desy       # npm
-yarn add desy          # yarn
-bun add desy           # bun
-pnpm add desy          # pnpm
+npm install desy
 ```
 
 ## Basic usage
@@ -44,7 +41,7 @@ const userSchema = d.object({
   username: d.string(),
 });
 
-userSchema.validate({username: 'Ludwig'});
+const error = userSchema.validate({username: 'Ludwig'}); // error is ""
 
 // extract the inferred type
 type User = InferDesy<typeof user>;
@@ -70,6 +67,162 @@ const schema = d.array(
   }),
 );
 schema.validate(people);
+```
+
+## API
+
+mixed
+
+- `array()` - create schema for array
+
+```ts
+const schema = d.mixed().array(); // = d.array()
+```
+
+### string
+
+- `.string()`
+
+```ts
+const schema = d.string();
+
+schema('a'); // valid
+schema(''); // error
+schema(null); // error
+```
+
+- `.length(chars)`
+
+```ts
+const schema = d.string().length(1);
+
+schema('aa'); // error
+schema('a'); // valid
+```
+
+- `.optional()`
+
+```ts
+const schema = d.string().optional();
+
+schema(''); // valid
+schema('a'); // valid
+```
+
+- `.oneOf(variants: string[])`
+
+```ts
+const schema = d.string().oneOf(['hello', 'world']);
+
+schema('hello'); // valid
+schema('world'); // valid
+schema('foo'); // error
+```
+
+- `.min(min_chars: number)`
+
+```ts
+const schema = d.string().min(1);
+
+schema(''); // error
+schema('a'); // valid
+```
+
+- `.max(max_chars: number)`
+
+```ts
+const schema = d.string().max(1);
+
+schema('aa'); // error
+schema('a'); // valid
+```
+
+### number
+
+- `.number()`
+
+```ts
+const schema = d.number();
+
+schema(42); // valid
+schema('42'); // error
+```
+
+- `.int()`
+
+```ts
+const schema = d.number().int();
+
+schema(42); // valid
+schema(42.2); // error
+```
+
+- `.float()`
+
+```ts
+const schema = d.number().float();
+
+schema(42); // error
+schema(42.2); // valid
+```
+
+- `.min(num: number)`
+
+```ts
+const schema = d.number().min(1);
+
+schema(0); // error
+schema(1); // valid
+```
+
+- `.max(num: number)`
+
+```ts
+const schema = d.number().max(1);
+
+schema(1); // valid
+schema(2); // error
+```
+
+### boolean
+
+- `.boolean()`
+
+```ts
+const schema = d.boolean();
+
+schema(true); // valid
+schema(false); // valid
+schema(1); // error
+```
+
+- `.true()`
+
+```ts
+const schema = d.boolean().true();
+
+schema(true); // valid
+schema(false); // error
+```
+
+- `.false()`
+
+```ts
+const schema = d.boolean().false();
+
+schema(true); // error
+schema(false); // valid
+```
+
+### null
+
+- `.max(num: number)`
+
+```ts
+const schema = d.null();
+
+schema(null); // valid
+schema(undefined); // error
 ```
 
 ## benchmark

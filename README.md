@@ -71,7 +71,11 @@ schema.validate(people);
 
 ## API
 
-mixed
+- [mixed()](#mixed)
+- [string()](#string)
+- [number()](#number)
+
+### mixed
 
 - `mixed()`
 

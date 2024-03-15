@@ -354,6 +354,12 @@ schema(['hello', 'world', 'foo']); // error
 
 ## benchmark
 
+|      | Simple string | Complex objex |
+| ---- | ------------- | ------------- |
+| desy | x             | x             |
+| zod  | 12x           | > 100x        |
+| yup  | 47x           | > 100x        |
+
 ### Object
 
 [Object benchmark](./bench/object.ts)

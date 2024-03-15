@@ -10,7 +10,8 @@
   "scripts": {
     "build": "bun build ./src/desy.ts --outdir ./dist && bun run types",
     "types": "tsc --project tsconfig.types.json",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "bench": "bun bench.ts"
   },
   "devDependencies": {
     "bun-types": "^1.0.1",

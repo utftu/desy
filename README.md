@@ -74,6 +74,12 @@ schema.validate(people);
 - [mixed()](#mixed)
 - [string()](#string)
 - [number()](#number)
+- [number()](#number)
+- [boolean()](#boolean)
+- [date()](#date)
+- [null()](#null)
+- [object()](#object)
+- [array()](#array)
 
 ### mixed
 
@@ -308,10 +314,52 @@ schema({}); // valid
 schema({name: 42}); // error
 ```
 
+### array
+
+- `.array(schemas: Schema[])`
+
+```ts
+const schema = d.arrar(d.sting());
+
+schema(['hello', 'world']); // valid
+schema(['hello', 42]); // error
+```
+
+- `.length(length: number)`
+
+```ts
+const schema = d.arrar(d.sting()).length(2);
+
+schema(['hello', 'world']); // valid
+schema(['world']); // error
+```
+
+- `.min(min_length: number)`
+
+```ts
+const schema = d.arrar(d.sting()).min(2);
+
+schema(['hello', 'world']); // valid
+schema(['world']); // error
+```
+
+- `.max(max_length: number)`
+
+```ts
+const schema = d.arrar(d.sting()).max(2);
+
+schema(['hello', 'world']); // valid
+schema(['hello', 'world', 'foo']); // error
+```
+
 ## benchmark
+
+### Object
 
 [Object benchmark](./bench/object.ts)
 ![object bench](./static/bench/object.png)
+
+### Complex
 
 [Complex benchmark](./bench/complex.ts)
 ![object bench](./static/bench/complex.png)

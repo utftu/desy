@@ -72,7 +72,7 @@ group('object with error', () => {
     runSeveralTimes(() => {
       const schema = objectBench.validators.yup();
 
-      schema.isValidSync(objectBench.data.error);
+      schema.isValidSync(objectBench.data.error, {  : true});
     });
   });
 

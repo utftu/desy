@@ -189,7 +189,7 @@ group('complex', () => {
           })
           .required(),
       });
-      schema.isValidSync(people);
+      schema.isValidSync(people, {abortEarly: true});
     });
   });
   bench('zod', () => {
@@ -249,8 +249,6 @@ group('string', () => {
     });
   });
   bench('zod', () => {
-    const schema = z.string();
-    const validate = (value) => schema.parse(value);
     runSeveralTimes(() => {
       const schema = z.string();
       schema.parse('hello');

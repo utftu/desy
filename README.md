@@ -354,6 +354,8 @@ schema(['hello', 'world', 'foo']); // error
 
 ## benchmark
 
+(smaller is better)
+
 |      | Simple string | Complex objex |
 | ---- | ------------- | ------------- |
 | desy | x             | x             |

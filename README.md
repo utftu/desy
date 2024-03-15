@@ -73,10 +73,14 @@ schema.validate(people);
 
 mixed
 
-- `array()` - create schema for array
+- `mixed()`
 
 ```ts
-const schema = d.mixed().array(); // = d.array()
+const schema = d.mixed();
+
+schema('a'); // valid
+schema(''); // valid
+schema(null); // valid
 ```
 
 ### string
@@ -214,15 +218,90 @@ schema(true); // error
 schema(false); // valid
 ```
 
+### date
+
+- `.date()`
+
+```ts
+const schema = d.date();
+
+schema(0); // valid
+schema('2024-03-15T23:21:48.605Z'); // valid
+schema(new Date()); // valid
+schema(undefined); // error
+```
+
+- `.min(date: DateValue)`
+
+```ts
+const now = Date.now();
+const schema = d.date().min(now);
+
+schema(now); // valid
+schema(now - 1); // error
+```
+
+- `.max(date: DateValue)`
+
+```ts
+const now = Date.now();
+const schema = d.date().max(now);
+
+schema(now); // valid
+schema(now + 1); // error
+```
+
 ### null
 
-- `.max(num: number)`
+- `.null()`
 
 ```ts
 const schema = d.null();
 
 schema(null); // valid
 schema(undefined); // error
+```
+
+### object
+
+- `.object(objschema: Record<string, Schema>)`
+
+```ts
+const schema = d.object({
+  name: d.sting(),
+});
+
+schema({name: 'alex'}); // valid
+schema({name: 'alex', age: 42}); // error
+schema({name: 42}); // error
+```
+
+- `.notStrict()`
+
+```ts
+const schema = d
+  .object({
+    name: d.sting(),
+  })
+  .notStrict();
+
+schema({name: 'alex'}); // valid
+schema({name: 'alex', age: 42}); // valid
+schema({name: 42}); // error
+```
+
+- `.optionalFields(fileds: string[])`
+
+```ts
+const schema = d
+  .object({
+    name: d.sting(),
+  })
+  .optionalFields(['name']);
+
+schema({name: 'alex'}); // valid
+schema({}); // valid
+schema({name: 42}); // error
 ```
 
 ## benchmark

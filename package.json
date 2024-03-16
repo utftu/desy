@@ -18,10 +18,9 @@
     "mitata": "^0.1.6",
     "yup": "^1.2.0",
     "zod": "^3.22.2",
+    "mol_data_all": "^1.1.1048",
+    "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
-  "license": "MIT",
-  "dependencies": {
-    "prettier": "^3.0.3"
-  }
+  "license": "MIT"
 }

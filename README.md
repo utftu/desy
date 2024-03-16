@@ -89,6 +89,7 @@ type User = InferDesy<typeof user>; // { username: string }
 - [null()](#null)
 - [object()](#object)
 - [array()](#array)
+- [test()](#custom-tests)
 
 ### mixed
 
@@ -368,6 +369,23 @@ const schema = d.arrar(d.sting()).max(2);
 
 schema(['hello', 'world']); // valid
 schema(['hello', 'world', 'foo']); // error
+```
+
+### Custom tests
+
+- `.test(func: (value: sting) => string)`
+
+```ts
+const schema = d.test((value) => {
+  if (value === 'world') {
+    return ''; // valid case
+  }
+
+  return 'MUST BE WORLD'; // error message
+});
+
+schema('hello'); // error
+schema('world'); // valid
 ```
 
 ## benchmark

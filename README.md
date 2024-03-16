@@ -1,22 +1,12 @@
 # desy - Dead Extraordinary Simple Yup
 
+- [Install](#install)
+- [Basic usage](#basic-usage)
 - [Key ideas](#key-ideas)
 - [Key features](#key-features)
-- [Install](#install)
 - [Realworld Example](#realworld-example)
 - [API](#api)
 - [Benchmark](#benchmark)
-
-## Key ideas
-
-- be `simple`
-- be as `fast` as point 1 allows
-
-## Key features
-
-- Stop validating on the first error. Desy stops validating on the first error and returns it.
-- A string is an indicator. Desy returns an empty string in a valid case. In case of an error, Desy returns a string with a description of the error.
-- No throwing errors. Desy only returns an empty or non-empty string.
 
 ## Install
 
@@ -39,6 +29,17 @@ mySchema.validate('tuna'); // => ""
 mySchema.validate(12); // => "Value must be string"
 ```
 
+## Key ideas
+
+- be `simple`
+- be as `fast` as point 1 allows
+
+## Key features
+
+- Stop validating on the first error. Desy stops validating on the first error and returns it.
+- A string is an indicator. Desy returns an empty string in a valid case. In case of an error, Desy returns a string with a description of the error.
+- No throwing errors. Desy only returns an empty or non-empty string.
+
 Creating an object schema
 
 ```ts
@@ -51,8 +52,7 @@ const userSchema = d.object({
 const error = userSchema.validate({username: 'Ludwig'}); // error is ""
 
 // extract the inferred type
-type User = InferDesy<typeof user>;
-// { username: string }
+type User = InferDesy<typeof user>; // { username: string }
 ```
 
 ## Realworld Example

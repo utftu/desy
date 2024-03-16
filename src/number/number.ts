@@ -4,7 +4,7 @@ import {Context} from '../context/context.ts';
 import {Config} from '../types.ts';
 
 const testNumber = (value: any, {path}: DefaultMessageProps) => {
-  if (typeof value !== 'number') {
+  if (typeof value !== 'number' || isFinite(value) === false) {
     return messages.number.number({path});
   }
   return '';

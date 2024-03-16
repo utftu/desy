@@ -2,9 +2,9 @@ import {Schema, type Infer} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {type ConfigValue} from '../types.ts';
 import {DefaultMessageProps, messages} from '../messages.ts';
-export type ObjectDsyValue = Record<string, Schema<any>>;
+export type ObjectDesyValue = Record<string, Schema<any>>;
 
-type PreparedTypes<TValue extends ObjectDsyValue> = {
+type PreparedTypes<TValue extends ObjectDesyValue> = {
   [K in keyof TValue]: Infer<TValue[K]>;
 };
 
@@ -22,7 +22,7 @@ const testObject = (value: any, {path}: DefaultMessageProps) => {
 
 const createTestObjectStrict = (props: {
   exclude: string[];
-  value: ObjectDsyValue;
+  value: ObjectDesyValue;
 }) => {
   return (currentValue: Object, {path}: DefaultMessageProps) => {
     const valueKeys = Object.keys(props.value);
@@ -34,36 +34,19 @@ const createTestObjectStrict = (props: {
 
     for (const key in currentValue) {
       if (!(key in props.value) && !props.exclude.includes(key)) {
-        console.log('-----', 'here');
         return messages.object.no_property({path: key});
       }
     }
-
-    // for (let i = 0; i < valueKeys.length; i++) {
-    //   if (
-    //     valueKeys[i] !== currentValueKeys[i] &&
-    //     !props.exclude.includes(valueKeys[i])
-    //   ) {
-    //     console.log(
-    //       '-----',
-    //       'valueKeys[i] !== currentValueKeys[i]',
-    //       valueKeys[i] !== currentValueKeys[i],
-    //     );
-    //     console.log('-----', 'valueKeys[i]', valueKeys[i]);
-    //     console.log('-----', 'currentValueKeys[i]', currentValueKeys[i]);
-    //     return messages.object.no_property({path: valueKeys[i]});
-    //   }
-    // }
 
     return '';
   };
 };
 
 export class ObjectDesy<
-  TValue extends ObjectDsyValue,
+  TValue extends ObjectDesyValue,
   TValueTypes = PreparedTypes<TValue>,
 > extends Schema<TValueTypes> {
-  static new<TValue extends ObjectDsyValue>(config: ConfigValue<TValue>) {
+  static new<TValue extends ObjectDesyValue>(config: ConfigValue<TValue>) {
     return new ObjectDesy(config);
   }
 
@@ -180,7 +163,7 @@ export class ObjectDesy<
   }
 }
 
-export function object<TValue extends ObjectDsyValue>(value: TValue) {
+export function object<TValue extends ObjectDesyValue>(value: TValue) {
   return ObjectDesy.new({
     value,
     context: Context.new(),

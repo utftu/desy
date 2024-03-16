@@ -1,7 +1,7 @@
 import {Infer, Schema} from '../schema/schema.ts';
 import {Context} from '../context/context.ts';
 import {StringDesy as StringDesy} from '../string/string.ts';
-import {type ObjectDsyValue, ObjectDesy} from '../object/object.ts';
+import {type ObjectDesyValue, ObjectDesy} from '../object/object.ts';
 import {messages} from '../messages.ts';
 import {BooleanDesy} from '../boolean/boolean.ts';
 import {type Config} from '../types.ts';
@@ -23,7 +23,7 @@ export class MixedDesy<TValue extends any = any> extends Schema<TValue> {
     return NumberDesy.new({context: this.context});
   }
 
-  object<TValue extends ObjectDsyValue>(shape: TValue) {
+  object<TValue extends ObjectDesyValue>(shape: TValue) {
     return ObjectDesy.new({context: this.context, value: shape});
   }
 

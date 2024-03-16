@@ -4,6 +4,8 @@ import {number} from './number.ts';
 describe('number', () => {
   it('number:number', () => {
     expect(number().validate(0)).toBe('');
+    expect(number().validate(Infinity)).not.toBe('');
+    expect(number().validate(NaN)).not.toBe('');
   });
 
   it('number:min', () => {

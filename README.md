@@ -354,15 +354,15 @@ schema(['hello', 'world', 'foo']); // error
 
 ## benchmark
 
-|      | Simple string | Complex objex |
-| ---- | ------------- | ------------- |
-| desy | x             | x             |
-| zod  | 12x           | > 100x        |
-| yup  | 47x           | > 100x        |
+|      | Simple string [result](./static/bench/string.png) | Complex object [result](./static/bench/complex.png) |
+| ---- | ------------------------------------------------- | --------------------------------------------------- |
+| desy | x                                                 | x                                                   |
+| zod  | 10x                                               | 8x                                                  |
+| yup  | 43x                                               | 31x                                                 |
 
 smaller is better
 
-### Object
+<!-- ### Object
 
 [Object benchmark](./bench/object.ts)
 ![object bench](./static/bench/object.png)
@@ -370,4 +370,4 @@ smaller is better
 ### Complex
 
 [Complex benchmark](./bench/complex.ts)
-![object bench](./static/bench/complex.png)
+![object bench](./static/bench/complex.png) -->

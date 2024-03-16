@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import {z} from 'zod';
 import {d} from './src/desy.ts';
 
-function runSeveralTimes(cb: () => void, times = 100) {
+function runSeveralTimes(cb: () => void, times = 1) {
   for (let i = 0; i < times; i++) {
     cb();
   }
@@ -24,7 +24,7 @@ function createPeople(valid = true) {
     return Array.from({length: ++i % 10}, () => fn());
   }
 
-  const people = Array.from({length: 100}, () => {
+  const people = Array.from({length: 1}, () => {
     return {
       type: 'person',
       hair: i % 2 ? 'blue' : 'brown',

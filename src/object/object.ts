@@ -32,14 +32,28 @@ const createTestObjectStrict = (props: {
       return messages.object.unknown({path});
     }
 
-    for (let i = 0; i < valueKeys.length; i++) {
-      if (
-        valueKeys[i] !== currentValueKeys[i] &&
-        !props.exclude.includes(valueKeys[i])
-      ) {
-        return messages.object.no_property({path: valueKeys[i]});
+    for (const key in currentValue) {
+      if (!(key in props.value) && !props.exclude.includes(key)) {
+        console.log('-----', 'here');
+        return messages.object.no_property({path: key});
       }
     }
+
+    // for (let i = 0; i < valueKeys.length; i++) {
+    //   if (
+    //     valueKeys[i] !== currentValueKeys[i] &&
+    //     !props.exclude.includes(valueKeys[i])
+    //   ) {
+    //     console.log(
+    //       '-----',
+    //       'valueKeys[i] !== currentValueKeys[i]',
+    //       valueKeys[i] !== currentValueKeys[i],
+    //     );
+    //     console.log('-----', 'valueKeys[i]', valueKeys[i]);
+    //     console.log('-----', 'currentValueKeys[i]', currentValueKeys[i]);
+    //     return messages.object.no_property({path: valueKeys[i]});
+    //   }
+    // }
 
     return '';
   };

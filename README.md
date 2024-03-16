@@ -142,6 +142,15 @@ schema('world'); // valid
 schema('foo'); // error
 ```
 
+- `.regexp(regexp: Regexp)`
+
+```ts
+const schema = d.string().regexp(/hello/i);
+
+schema('123hello'); // valid
+schema('hell'); // error
+```
+
 - `.min(min_chars: number)`
 
 ```ts

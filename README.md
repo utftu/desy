@@ -4,7 +4,7 @@
 - [Basic usage](#basic-usage)
 - [Key ideas](#key-ideas)
 - [Key features](#key-features)
-- [Realworld Example](#realworld-example)
+- [Examples](#examples)
 - [API](#api)
 - [Benchmark](#benchmark)
 
@@ -40,22 +40,9 @@ mySchema.validate(12); // => "Value must be string"
 - A string is an indicator. Desy returns an empty string in a valid case. In case of an error, Desy returns a string with a description of the error.
 - No throwing errors. Desy only returns an empty or non-empty string.
 
-Creating an object schema
+## Examples
 
-```ts
-import {d, InferDesy} from 'desy';
-
-const userSchema = d.object({
-  username: d.string(),
-});
-
-const error = userSchema.validate({username: 'Ludwig'}); // error is ""
-
-// extract the inferred type
-type User = InferDesy<typeof user>; // { username: string }
-```
-
-## Realworld Example
+Deep schema
 
 ```ts
 const schema = d.array(
@@ -74,6 +61,21 @@ const schema = d.array(
   }),
 );
 schema.validate(people);
+```
+
+Get schema's types
+
+```ts
+import {d, InferDesy} from 'desy';
+
+const userSchema = d.object({
+  username: d.string(),
+});
+
+const error = userSchema.validate({username: 'Ludwig'}); // error is ""
+
+// extract the inferred type
+type User = InferDesy<typeof user>; // { username: string }
 ```
 
 ## API

@@ -3,6 +3,7 @@ export type DefaultMessageProps = {path: string};
 type Min = DefaultMessageProps & {min: number};
 type Max = DefaultMessageProps & {max: number};
 type Length = DefaultMessageProps & {length: number};
+type RegexpMessage = DefaultMessageProps & {regexp: string};
 
 export const messages = {
   string: {
@@ -13,6 +14,7 @@ export const messages = {
     max: ({path, max}: Max) => `${path} must be at most ${max} characters`,
     length: ({path, length}: Length) =>
       `${path} has be exactly ${length} characters`,
+    regexp: ({path, regexp}: RegexpMessage) => `${path} must match ${regexp}`,
     one_of: ({
       path,
       variants,

@@ -40,4 +40,11 @@ describe('string', () => {
     expect(schema.validate('he')).not.toBe('');
     expect(schema.validate('h')).toBe('');
   });
+
+  it('string:regexp', () => {
+    const schema = string().regexp(/hello/i);
+
+    expect(schema.validate('hell')).toBe('');
+    expect(schema.validate('123hello')).toBe('');
+  });
 });

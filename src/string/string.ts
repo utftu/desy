@@ -97,6 +97,24 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 
     return this as StringDesy<TValue[number]>;
   }
+
+  regexp(regexp: RegExp) {
+    this.context.rules.push({
+      name: 'string:regexp',
+      test: (value: string, {path}) => {
+        if (!regexp.test(value)) {
+          return messages.string.regexp({
+            path,
+            regexp: regexp.toString(),
+          });
+        }
+
+        return '';
+      },
+    });
+
+    return this;
+  }
 }
 
 export function string() {

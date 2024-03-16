@@ -37,7 +37,7 @@ describe('object', () => {
     const valid = schema.validate({});
     expect(valid).toBe('');
   });
-  it.only('unknown', () => {
+  it('unknown', () => {
     const schema = object({name: string()});
     const error = schema.validate({
       fullName: 'Smith',

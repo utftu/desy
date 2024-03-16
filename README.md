@@ -80,6 +80,7 @@ type User = InferDesy<typeof user>; // { username: string }
 
 ## API
 
+- [Commin](#common)
 - [mixed()](#mixed)
 - [string()](#string)
 - [number()](#number)
@@ -89,7 +90,33 @@ type User = InferDesy<typeof user>; // { username: string }
 - [null()](#null)
 - [object()](#object)
 - [array()](#array)
-- [test()](#custom-tests)
+
+### Common
+
+- `validate(value: any)`
+
+```ts
+const schema = d.mixed();
+
+schema.validate('a'); // valid
+schema.validate(''); // valid
+schema.validate(null); // valid
+```
+
+- `.test(func: (value: sting) => string)`
+
+```ts
+const schema = d.mixed().test((value) => {
+  if (value === 'world') {
+    return ''; // valid case
+  }
+
+  return 'MUST BE WORLD'; // error message
+});
+
+schema.validate('hello'); // error
+schema.validate('world'); // valid
+```
 
 ### mixed
 
@@ -98,9 +125,9 @@ type User = InferDesy<typeof user>; // { username: string }
 ```ts
 const schema = d.mixed();
 
-schema('a'); // valid
-schema(''); // valid
-schema(null); // valid
+schema.validate('a'); // valid
+schema.validate(''); // valid
+schema.validate(null); // valid
 ```
 
 ### string
@@ -110,9 +137,9 @@ schema(null); // valid
 ```ts
 const schema = d.string();
 
-schema('a'); // valid
-schema(''); // error
-schema(null); // error
+schema.validate('a'); // valid
+schema.validate(''); // error
+schema.validate(null); // error
 ```
 
 - `.length(chars)`
@@ -120,8 +147,8 @@ schema(null); // error
 ```ts
 const schema = d.string().length(1);
 
-schema('aa'); // error
-schema('a'); // valid
+schema.validate('aa'); // error
+schema.validate('a'); // valid
 ```
 
 - `.optional()`
@@ -129,8 +156,8 @@ schema('a'); // valid
 ```ts
 const schema = d.string().optional();
 
-schema(''); // valid
-schema('a'); // valid
+schema.validate(''); // valid
+schema.validate('a'); // valid
 ```
 
 - `.oneOf(variants: string[])`
@@ -138,9 +165,9 @@ schema('a'); // valid
 ```ts
 const schema = d.string().oneOf(['hello', 'world']);
 
-schema('hello'); // valid
-schema('world'); // valid
-schema('foo'); // error
+schema.validate('hello'); // valid
+schema.validate('world'); // valid
+schema.validate('foo'); // error
 ```
 
 - `.regexp(regexp: Regexp)`
@@ -148,8 +175,8 @@ schema('foo'); // error
 ```ts
 const schema = d.string().regexp(/hello/i);
 
-schema('123hello'); // valid
-schema('hell'); // error
+schema.validate('123hello'); // valid
+schema.validate('hell'); // error
 ```
 
 - `.min(min_chars: number)`
@@ -157,8 +184,8 @@ schema('hell'); // error
 ```ts
 const schema = d.string().min(1);
 
-schema(''); // error
-schema('a'); // valid
+schema.validate(''); // error
+schema.validate('a'); // valid
 ```
 
 - `.max(max_chars: number)`
@@ -166,8 +193,8 @@ schema('a'); // valid
 ```ts
 const schema = d.string().max(1);
 
-schema('aa'); // error
-schema('a'); // valid
+schema.validate('aa'); // error
+schema.validate('a'); // valid
 ```
 
 ### number
@@ -177,8 +204,8 @@ schema('a'); // valid
 ```ts
 const schema = d.number();
 
-schema(42); // valid
-schema('42'); // error
+schema.validate(42); // valid
+schema.validate('42'); // error
 ```
 
 - `.int()`
@@ -186,8 +213,8 @@ schema('42'); // error
 ```ts
 const schema = d.number().int();
 
-schema(42); // valid
-schema(42.2); // error
+schema.validate(42); // valid
+schema.validate(42.2); // error
 ```
 
 - `.float()`
@@ -195,8 +222,8 @@ schema(42.2); // error
 ```ts
 const schema = d.number().float();
 
-schema(42); // error
-schema(42.2); // valid
+schema.validate(42); // error
+schema.validate(42.2); // valid
 ```
 
 - `.min(num: number)`
@@ -204,8 +231,8 @@ schema(42.2); // valid
 ```ts
 const schema = d.number().min(1);
 
-schema(0); // error
-schema(1); // valid
+schema.validate(0); // error
+schema.validate(1); // valid
 ```
 
 - `.max(num: number)`
@@ -213,8 +240,8 @@ schema(1); // valid
 ```ts
 const schema = d.number().max(1);
 
-schema(1); // valid
-schema(2); // error
+schema.validate(1); // valid
+schema.validate(2); // error
 ```
 
 ### boolean
@@ -224,9 +251,9 @@ schema(2); // error
 ```ts
 const schema = d.boolean();
 
-schema(true); // valid
-schema(false); // valid
-schema(1); // error
+schema.validate(true); // valid
+schema.validate(false); // valid
+schema.validate(1); // error
 ```
 
 - `.true()`
@@ -234,8 +261,8 @@ schema(1); // error
 ```ts
 const schema = d.boolean().true();
 
-schema(true); // valid
-schema(false); // error
+schema.validate(true); // valid
+schema.validate(false); // error
 ```
 
 - `.false()`
@@ -243,8 +270,8 @@ schema(false); // error
 ```ts
 const schema = d.boolean().false();
 
-schema(true); // error
-schema(false); // valid
+schema.validate(true); // error
+schema.validate(false); // valid
 ```
 
 ### date
@@ -254,10 +281,10 @@ schema(false); // valid
 ```ts
 const schema = d.date();
 
-schema(0); // valid
-schema('2024-03-15T23:21:48.605Z'); // valid
-schema(new Date()); // valid
-schema(undefined); // error
+schema.validate(0); // valid
+schema.validate('2024-03-15T23:21:48.605Z'); // valid
+schema.validate(new Date()); // valid
+schema.validate(undefined); // error
 ```
 
 - `.min(date: DateValue)`
@@ -266,8 +293,8 @@ schema(undefined); // error
 const now = Date.now();
 const schema = d.date().min(now);
 
-schema(now); // valid
-schema(now - 1); // error
+schema.validate(now); // valid
+schema.validate(now - 1); // error
 ```
 
 - `.max(date: DateValue)`
@@ -276,8 +303,8 @@ schema(now - 1); // error
 const now = Date.now();
 const schema = d.date().max(now);
 
-schema(now); // valid
-schema(now + 1); // error
+schema.validate(now); // valid
+schema.validate(now + 1); // error
 ```
 
 ### null
@@ -287,8 +314,8 @@ schema(now + 1); // error
 ```ts
 const schema = d.null();
 
-schema(null); // valid
-schema(undefined); // error
+schema.validate(null); // valid
+schema.validate(undefined); // error
 ```
 
 ### object
@@ -300,9 +327,9 @@ const schema = d.object({
   name: d.sting(),
 });
 
-schema({name: 'alex'}); // valid
-schema({name: 'alex', age: 42}); // error
-schema({name: 42}); // error
+schema.validate({name: 'alex'}); // valid
+schema.validate({name: 'alex', age: 42}); // error
+schema.validate({name: 42}); // error
 ```
 
 - `.notStrict()`
@@ -314,9 +341,9 @@ const schema = d
   })
   .notStrict();
 
-schema({name: 'alex'}); // valid
-schema({name: 'alex', age: 42}); // valid
-schema({name: 42}); // error
+schema.validate({name: 'alex'}); // valid
+schema.validate({name: 'alex', age: 42}); // valid
+schema.validate({name: 42}); // error
 ```
 
 - `.optionalFields(fileds: string[])`
@@ -328,9 +355,9 @@ const schema = d
   })
   .optionalFields(['name']);
 
-schema({name: 'alex'}); // valid
-schema({}); // valid
-schema({name: 42}); // error
+schema.validate({name: 'alex'}); // valid
+schema.validate({}); // valid
+schema.validate({name: 42}); // error
 ```
 
 ### array
@@ -340,8 +367,8 @@ schema({name: 42}); // error
 ```ts
 const schema = d.arrar(d.sting());
 
-schema(['hello', 'world']); // valid
-schema(['hello', 42]); // error
+schema.validate(['hello', 'world']); // valid
+schema.validate(['hello', 42]); // error
 ```
 
 - `.length(length: number)`
@@ -349,8 +376,8 @@ schema(['hello', 42]); // error
 ```ts
 const schema = d.arrar(d.sting()).length(2);
 
-schema(['hello', 'world']); // valid
-schema(['world']); // error
+schema.validate(['hello', 'world']); // valid
+schema.validate(['world']); // error
 ```
 
 - `.min(min_length: number)`
@@ -358,8 +385,8 @@ schema(['world']); // error
 ```ts
 const schema = d.arrar(d.sting()).min(2);
 
-schema(['hello', 'world']); // valid
-schema(['world']); // error
+schema.validate(['hello', 'world']); // valid
+schema.validate(['world']); // error
 ```
 
 - `.max(max_length: number)`
@@ -367,25 +394,8 @@ schema(['world']); // error
 ```ts
 const schema = d.arrar(d.sting()).max(2);
 
-schema(['hello', 'world']); // valid
-schema(['hello', 'world', 'foo']); // error
-```
-
-### Custom tests
-
-- `.test(func: (value: sting) => string)`
-
-```ts
-const schema = d.test((value) => {
-  if (value === 'world') {
-    return ''; // valid case
-  }
-
-  return 'MUST BE WORLD'; // error message
-});
-
-schema('hello'); // error
-schema('world'); // valid
+schema.validate(['hello', 'world']); // valid
+schema.validate(['hello', 'world', 'foo']); // error
 ```
 
 ## benchmark

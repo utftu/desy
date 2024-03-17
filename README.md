@@ -80,7 +80,7 @@ type User = InferDesy<typeof user>; // { username: string }
 
 ## API
 
-- [Commin](#common)
+- [Common](#common)
 - [mixed()](#mixed)
 - [string()](#string)
 - [number()](#number)

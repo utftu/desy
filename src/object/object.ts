@@ -20,20 +20,23 @@ const testObject = (value: any, {path}: DefaultMessageProps) => {
   return '';
 };
 
-const createTestObjectStrict = (props: {
-  exclude: string[];
+const createTestObjectStrict = ({
+  optional,
+  value,
+}: {
+  optional: string[];
   value: ObjectDesyValue;
 }) => {
   return (currentValue: Object, {path}: DefaultMessageProps) => {
-    const valueKeys = Object.keys(props.value);
+    const valueKeys = Object.keys(value);
     const currentValueKeys = Object.keys(currentValue);
 
-    if (valueKeys.length - props.exclude.length !== currentValueKeys.length) {
+    if (currentValueKeys.length > valueKeys.length) {
       return messages.object.unknown({path});
     }
 
     for (const key in currentValue) {
-      if (!(key in props.value) && !props.exclude.includes(key)) {
+      if (!(key in value) && !optional.includes(key)) {
         return messages.object.no_property({path: key});
       }
     }
@@ -59,7 +62,7 @@ export class ObjectDesy<
     this.context.rules.push({
       name: 'object:strict',
       test: createTestObjectStrict({
-        exclude: [],
+        optional: [],
         value: config.value,
       }),
     });
@@ -126,7 +129,7 @@ export class ObjectDesy<
       this.context.rules[strictIdx] = {
         name: 'object:strict',
         test: createTestObjectStrict({
-          exclude: optionalFields,
+          optional: optionalFields,
           value: this.value,
         }),
       };

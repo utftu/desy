@@ -37,6 +37,11 @@ describe('object', () => {
     const valid = schema.validate({});
     expect(valid).toBe('');
   });
+  it.only('optionalFields exist', () => {
+    const schema = object({name: string()}).optionalFields(['name']);
+    const valid = schema.validate({name: 'hello'});
+    expect(valid).toBe('');
+  });
   it('unknown', () => {
     const schema = object({name: string()});
     const error = schema.validate({

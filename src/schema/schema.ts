@@ -7,6 +7,7 @@ type Config = {
 
 export type Infer<TType extends Schema<any>> = DeepCopy<TType['types']>;
 type ConfigValidate = {path: string};
+const defaultConfigValidate = {path: 'Value'};
 
 export abstract class Schema<TValue> {
   types!: TValue;
@@ -15,7 +16,7 @@ export abstract class Schema<TValue> {
   constructor({context}: Config) {
     this.context = context;
   }
-  validate(value: any, {path}: ConfigValidate = {path: 'Value'}) {
+  validate(value: any, {path}: ConfigValidate = defaultConfigValidate) {
     for (const testEntity of this.context.rules) {
       const error = testEntity.test(value, {path});
       if (error !== '') {
@@ -25,7 +26,7 @@ export abstract class Schema<TValue> {
     return '';
   }
 
-  validateObj(value: any, config: ConfigValidate) {
+  validateObj(value: any, config: ConfigValidate = defaultConfigValidate) {
     const validateError = this.validate(value, config);
 
     if (validateError !== '') {

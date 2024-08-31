@@ -22,6 +22,9 @@ describe('object', () => {
     const error = schema.validate({
       name: 23,
     });
+    const a = schema.validateObj({
+      name: 'hello',
+    });
     expect(error).not.toBe('');
   });
   it('notStrict', () => {

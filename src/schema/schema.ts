@@ -26,14 +26,19 @@ export abstract class Schema<TValue> {
     return '';
   }
 
-  validateObj(value: any, config: ConfigValidate = defaultConfigValidate) {
+  validateObj(
+    value: any,
+    config: ConfigValidate = defaultConfigValidate,
+  ): Infer<typeof this> | string {
     const validateError = this.validate(value, config);
 
     if (validateError !== '') {
       return validateError;
     }
 
-    return value as (typeof this)['types'];
+    return value;
+    // return value as Infer<typeof>
+    // return value as (typeof this)['types'];
   }
 
   test<TValue extends (typeof this)['types']>(cb: Test) {

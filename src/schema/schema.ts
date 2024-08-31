@@ -33,7 +33,7 @@ export abstract class Schema<TValue> {
       return validateError;
     }
 
-    return value as Infer<typeof this>;
+    return value as (typeof this)['types'];
   }
 
   test<TValue extends (typeof this)['types']>(cb: Test) {

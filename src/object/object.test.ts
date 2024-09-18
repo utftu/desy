@@ -2,6 +2,8 @@ import {describe, expect, it} from 'bun:test';
 import {object} from './object.ts';
 import {string} from '../string/string.ts';
 import {messages} from '../messages.ts';
+import {number} from '../number/number.ts';
+import {Infer} from '../schema/schema.ts';
 
 describe('object', () => {
   it('object:object', () => {
@@ -21,9 +23,6 @@ describe('object', () => {
     const schema = object({name: string()});
     const error = schema.validate({
       name: 23,
-    });
-    const a = schema.validateObj({
-      name: 'hello',
     });
     expect(error).not.toBe('');
   });
@@ -53,4 +52,12 @@ describe('object', () => {
     });
     expect(error).toBe(messages.object.unknown({path: 'Value'}));
   });
+  it('number', () => {
+    const schema = object({age: number()});
+
+    type A = Infer<typeof schema>;
+  });
 });
+
+const a = number();
+const b = object({});

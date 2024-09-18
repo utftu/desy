@@ -5,7 +5,8 @@ type Config = {
   context: Context;
 };
 
-export type Infer<TType extends Schema<any>> = DeepCopy<TType['types']>;
+// export type Infer<TType extends Schema<any>> = DeepCopy<TType['types']>;
+export type Infer<TType extends Schema<any>> = TType['types'];
 type ConfigValidate = {path: string};
 const defaultConfigValidate = {path: 'Value'};
 
@@ -37,8 +38,6 @@ export abstract class Schema<TValue> {
     }
 
     return value;
-    // return value as Infer<typeof>
-    // return value as (typeof this)['types'];
   }
 
   test<TValue extends (typeof this)['types']>(cb: Test) {

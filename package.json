@@ -10,6 +10,7 @@
   "scripts": {
     "build": "bun build ./src/desy.ts --outdir ./dist && bun run types",
     "types": "tsc --project tsconfig.types.json",
+    "check": "tsc --project tsconfig.check.json",
     "format": "prettier --write .",
     "bench": "bun bench.ts"
   },

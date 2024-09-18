@@ -1,11 +1,9 @@
 import {Context, Test} from '../context/context.ts';
-import {DeepCopy} from '../types.ts';
 
 type Config = {
   context: Context;
 };
 
-// export type Infer<TType extends Schema<any>> = DeepCopy<TType['types']>;
 export type Infer<TType extends Schema<any>> = TType['types'];
 type ConfigValidate = {path: string};
 const defaultConfigValidate = {path: 'Value'};

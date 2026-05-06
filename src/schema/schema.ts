@@ -16,6 +16,8 @@ export abstract class Schema<TValue> {
     this.context = context;
   }
   validate(value: any, {path}: ConfigValidate = defaultConfigValidate) {
+    if (this.context.allowNull && value === null) return '';
+    if (this.context.allowUndefined && value === undefined) return '';
     for (const testEntity of this.context.rules) {
       const error = testEntity.test(value, {path});
       if (error !== '') {
@@ -23,6 +25,22 @@ export abstract class Schema<TValue> {
       }
     }
     return '';
+  }
+
+  nullable() {
+    this.context.allowNull = true;
+    return this as any as Schema<TValue | null>;
+  }
+
+  undefinable() {
+    this.context.allowUndefined = true;
+    return this as any as Schema<TValue | undefined>;
+  }
+
+  optional() {
+    this.context.allowNull = true;
+    this.context.allowUndefined = true;
+    return this as any as Schema<TValue | null | undefined>;
   }
 
   validateObj(

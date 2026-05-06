@@ -10,4 +10,6 @@ export class Context {
     return new Context();
   }
   rules: TestEntity[] = [];
+  allowNull: boolean = false;
+  allowUndefined: boolean = false;
 }

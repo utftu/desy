@@ -35,10 +35,12 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
   }
 
   optional() {
+    this.context.allowNull = true;
+    this.context.allowUndefined = true;
     this.context.rules = this.context.rules.filter(
       ({test}) => test !== StringDesy.required,
     );
-    return this;
+    return this as any as Schema<TValue | null | undefined>;
   }
 
   length(length: number) {
@@ -120,5 +122,3 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 export function string() {
   return StringDesy.new({context: Context.new()});
 }
-
-const a = string().oneOf(['hello'] as const);

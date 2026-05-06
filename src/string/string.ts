@@ -34,7 +34,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     });
   }
 
-  optional() {
+  allowEmpty() {
     this.context.allowNull = true;
     this.context.allowUndefined = true;
     this.context.rules = this.context.rules.filter(

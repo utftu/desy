@@ -15,7 +15,7 @@ describe('string', () => {
     expect(schema.validate('')).not.toBe('');
   });
   it('optional', () => {
-    const schema = string().optional();
+    const schema = string().allowEmpty();
 
     expect(schema.validate('')).toBe('');
   });

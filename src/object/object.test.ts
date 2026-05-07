@@ -39,7 +39,7 @@ describe('object', () => {
     const valid = schema.validate({});
     expect(valid).toBe('');
   });
-  it.only('optionalFields exist', () => {
+  it('optionalFields exist', () => {
     const schema = object({name: string()}).optionalFields(['name']);
     const valid = schema.validate({name: 'hello'});
     expect(valid).toBe('');
@@ -52,12 +52,19 @@ describe('object', () => {
     });
     expect(error).toBe(messages.object.unknown({path: 'Value'}));
   });
-  it('number', () => {
-    const schema = object({age: number()});
 
-    type A = Infer<typeof schema>;
+  it('object:optional', () => {
+    const obj = object({
+      name: string().optional(),
+      age: number(),
+    });
+
+    const error = obj.validate({age: 18});
+
+    expect(error).toBe('');
+
+    const error2 = obj.validate({name: 'hello'});
+
+    expect(error2).not.toBe('');
   });
 });
-
-const a = number();
-const b = object({});

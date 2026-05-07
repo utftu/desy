@@ -5,7 +5,13 @@ import {DefaultMessageProps, messages} from '../messages.ts';
 export type ObjectDesyValue = Record<string, Schema<any>>;
 
 type PreparedTypes<TValue extends ObjectDesyValue> = {
-  [K in keyof TValue]: Infer<TValue[K]>;
+  [K in keyof TValue as undefined extends Infer<TValue[K]> ? never : K]: Infer<
+    TValue[K]
+  >;
+} & {
+  [K in keyof TValue as undefined extends Infer<TValue[K]> ? K : never]?: Infer<
+    TValue[K]
+  >;
 };
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -22,13 +28,13 @@ const testObject = (value: any, {path}: DefaultMessageProps) => {
 
 const createTestObjectStrict = ({
   optional,
-  value,
+  value: schemaValue,
 }: {
   optional: string[];
   value: ObjectDesyValue;
 }) => {
   return (currentValue: Object, {path}: DefaultMessageProps) => {
-    const valueKeys = Object.keys(value);
+    const valueKeys = Object.keys(schemaValue);
     const currentValueKeys = Object.keys(currentValue);
 
     if (currentValueKeys.length > valueKeys.length) {
@@ -36,7 +42,7 @@ const createTestObjectStrict = ({
     }
 
     for (const key in currentValue) {
-      if (!(key in value) && !optional.includes(key)) {
+      if (!(key in schemaValue) && !optional.includes(key)) {
         return messages.object.no_property({path: key});
       }
     }

@@ -106,10 +106,6 @@ export class ObjectDesy<
         test: (currentValue, {path}) => {
           for (const key in this.value) {
             const schema = this.value[key];
-
-            if (!(key in this.value)) {
-              continue;
-            }
             const error = schema.validate(currentValue[key], {
               path: path === '' ? key : `${path}.${key}`,
             });
@@ -122,7 +118,7 @@ export class ObjectDesy<
       };
     }
 
-    return this as ObjectDesy<TValue, Partial<(typeof this)['types']>>;
+    return this;
   }
 
   optionalFields<TValueLocal extends keyof TValueTypes & string = any>(

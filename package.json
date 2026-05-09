@@ -1,6 +1,6 @@
 {
   "name": "desy",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "type": "module",
   "types": "./dist/types/desy.d.ts",
   "main": "./dist/desy.js",

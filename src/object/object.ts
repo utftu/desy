@@ -4,20 +4,21 @@ import {type ConfigValue} from '../types.ts';
 import {DefaultMessageProps, messages} from '../messages.ts';
 export type ObjectDesyValue = Record<string, Schema<any>>;
 
-type PreparedTypes<TValue extends ObjectDesyValue> = {
-  [K in keyof TValue as undefined extends Infer<TValue[K]> ? never : K]: Infer<
-    TValue[K]
-  >;
-} & {
-  [K in keyof TValue as undefined extends Infer<TValue[K]> ? K : never]?: Infer<
-    TValue[K]
-  >;
-};
+type Expand<T> = T extends object ? {[K in keyof T]: T[K]} : T;
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+type PreparedTypes<TValue extends ObjectDesyValue> = Expand<
+  {
+    [K in keyof TValue as undefined extends Infer<TValue[K]> ? never : K]: Infer<
+      TValue[K]
+    >;
+  } & {
+    [K in keyof TValue as undefined extends Infer<TValue[K]> ? K : never]?: Infer<
+      TValue[K]
+    >;
+  }
+>;
 
 const strictName = 'object:strict';
-const fieldsName = 'object:fields';
 
 const testObject = (value: any, {path}: DefaultMessageProps) => {
   if (typeof value !== 'object') {
@@ -27,10 +28,8 @@ const testObject = (value: any, {path}: DefaultMessageProps) => {
 };
 
 const createTestObjectStrict = ({
-  optional,
   value: schemaValue,
 }: {
-  optional: string[];
   value: ObjectDesyValue;
 }) => {
   return (currentValue: Object, {path}: DefaultMessageProps) => {
@@ -42,7 +41,7 @@ const createTestObjectStrict = ({
     }
 
     for (const key in currentValue) {
-      if (!(key in schemaValue) && !optional.includes(key)) {
+      if (!(key in schemaValue)) {
         return messages.object.no_property({path: key});
       }
     }
@@ -89,7 +88,7 @@ export class ObjectDesy<
     if (strictIdx === -1) {
       this.context.rules.splice(1, 0, {
         name: strictName,
-        test: createTestObjectStrict({optional: [], value: this.value}),
+        test: createTestObjectStrict({value: this.value}),
       });
     }
     return this;
@@ -104,54 +103,8 @@ export class ObjectDesy<
     }
     return this;
   }
-
-  optionalFields<TValueLocal extends keyof TValueTypes & string = any>(
-    optionalFields: TValueLocal[],
-  ) {
-    const strictIdx = this.context.rules.findIndex(
-      ({name}) => name === strictName,
-    );
-    if (strictIdx !== -1) {
-      this.context.rules[strictIdx] = {
-        name: strictName,
-        test: createTestObjectStrict({
-          optional: optionalFields,
-          value: this.value,
-        }),
-      };
-    }
-    const fieldsIdx = this.context.rules.findIndex(
-      ({name}) => name === fieldsName,
-    );
-    if (fieldsIdx !== -1) {
-      this.context.rules[fieldsIdx] = {
-        name: fieldsName,
-        test: (currentValue, {path}) => {
-          for (const key in this.value) {
-            const schema = this.value[key];
-            if (!(key in currentValue) && optionalFields.includes(key as any)) {
-              continue;
-            }
-            const error = schema.validate(currentValue[key], {
-              path: path === '' ? key : `${path}.${key}`,
-            });
-            if (error !== '') {
-              return error;
-            }
-          }
-          return '';
-        },
-      };
-    }
-
-    return this as ObjectDesy<
-      TValue,
-      PartialBy<(typeof this)['types'], TValueLocal>
-    >;
-  }
 }
 
 export function object<TValue extends ObjectDesyValue>(value: TValue) {
   return ObjectDesy.new({value, context: Context.new()});
 }
-

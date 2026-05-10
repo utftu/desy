@@ -66,13 +66,6 @@ export class ObjectDesy<
     this.value = config.value;
     this.context.rules.push({name: 'object:object', test: testObject});
     this.context.rules.push({
-      name: 'object:strict',
-      test: createTestObjectStrict({
-        optional: [],
-        value: config.value,
-      }),
-    });
-    this.context.rules.push({
       name: 'object:fields',
       test: (currentValue, {path}) => {
         for (const key in this.value) {
@@ -89,35 +82,26 @@ export class ObjectDesy<
     });
   }
 
+  strictObject() {
+    const strictIdx = this.context.rules.findIndex(
+      ({name}) => name === strictName,
+    );
+    if (strictIdx === -1) {
+      this.context.rules.splice(1, 0, {
+        name: strictName,
+        test: createTestObjectStrict({optional: [], value: this.value}),
+      });
+    }
+    return this;
+  }
+
   notStrict() {
     const strictIdx = this.context.rules.findIndex(
       ({name}) => name === strictName,
     );
-    if (strictIdx !== undefined) {
+    if (strictIdx !== -1) {
       this.context.rules.splice(strictIdx, 1);
     }
-
-    const fieldsIdx = this.context.rules.findIndex(
-      ({name}) => name === fieldsName,
-    );
-    if (fieldsIdx !== undefined) {
-      this.context.rules[fieldsIdx] = {
-        name: fieldsName,
-        test: (currentValue, {path}) => {
-          for (const key in this.value) {
-            const schema = this.value[key];
-            const error = schema.validate(currentValue[key], {
-              path: path === '' ? key : `${path}.${key}`,
-            });
-            if (error !== '') {
-              return error;
-            }
-          }
-          return '';
-        },
-      };
-    }
-
     return this;
   }
 
@@ -127,9 +111,9 @@ export class ObjectDesy<
     const strictIdx = this.context.rules.findIndex(
       ({name}) => name === strictName,
     );
-    if (strictIdx !== undefined) {
+    if (strictIdx !== -1) {
       this.context.rules[strictIdx] = {
-        name: 'object:strict',
+        name: strictName,
         test: createTestObjectStrict({
           optional: optionalFields,
           value: this.value,
@@ -139,13 +123,12 @@ export class ObjectDesy<
     const fieldsIdx = this.context.rules.findIndex(
       ({name}) => name === fieldsName,
     );
-    if (fieldsIdx !== undefined) {
+    if (fieldsIdx !== -1) {
       this.context.rules[fieldsIdx] = {
         name: fieldsName,
         test: (currentValue, {path}) => {
           for (const key in this.value) {
             const schema = this.value[key];
-
             if (!(key in currentValue) && optionalFields.includes(key as any)) {
               continue;
             }
@@ -169,8 +152,6 @@ export class ObjectDesy<
 }
 
 export function object<TValue extends ObjectDesyValue>(value: TValue) {
-  return ObjectDesy.new({
-    value,
-    context: Context.new(),
-  });
+  return ObjectDesy.new({value, context: Context.new()});
 }
+

@@ -21,7 +21,7 @@ type PreparedTypes<TValue extends ObjectDesyValue> = Expand<
 const strictName = 'object:strict';
 
 const testObject = (value: any, {path}: DefaultMessageProps) => {
-  if (typeof value !== 'object' && !value) {
+  if (!value || typeof value !== 'object') {
     return messages.object.object({path});
   }
   return '';

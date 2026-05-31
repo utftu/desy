@@ -11,6 +11,11 @@ describe('object', () => {
     const error = schema.validate(undefined);
     expect(error).not.toBe('');
   });
+
+  it('object:null — null is not valid object', () => {
+    const schema = object({name: string()});
+    expect(schema.validate(null)).not.toBe('');
+  });
   it('object:strict', () => {
     const schema = object({name: string()}).strictObject();
     const error = schema.validate({

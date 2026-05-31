@@ -8,20 +8,20 @@ type Expand<T> = T extends object ? {[K in keyof T]: T[K]} : T;
 
 type PreparedTypes<TValue extends ObjectDesyValue> = Expand<
   {
-    [K in keyof TValue as undefined extends Infer<TValue[K]> ? never : K]: Infer<
-      TValue[K]
-    >;
+    [K in keyof TValue as undefined extends Infer<TValue[K]>
+      ? never
+      : K]: Infer<TValue[K]>;
   } & {
-    [K in keyof TValue as undefined extends Infer<TValue[K]> ? K : never]?: Infer<
-      TValue[K]
-    >;
+    [K in keyof TValue as undefined extends Infer<TValue[K]>
+      ? K
+      : never]?: Infer<TValue[K]>;
   }
 >;
 
 const strictName = 'object:strict';
 
 const testObject = (value: any, {path}: DefaultMessageProps) => {
-  if (typeof value !== 'object') {
+  if (typeof value !== 'object' && !value) {
     return messages.object.object({path});
   }
   return '';

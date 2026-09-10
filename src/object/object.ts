@@ -63,9 +63,14 @@ export class ObjectDesy<
   constructor(config: ConfigValue<TValue>) {
     super(config);
     this.value = config.value;
-    this.context.rules.push({name: 'object:object', test: testObject});
+    this.context.rules.push({
+      name: 'object:object',
+      test: testObject,
+      meta: undefined,
+    });
     this.context.rules.push({
       name: 'object:fields',
+      meta: {fields: config.value, optional: []},
       test: (currentValue, {path}) => {
         for (const key in this.value) {
           const schema = config.value[key];
@@ -88,6 +93,7 @@ export class ObjectDesy<
     if (strictIdx === -1) {
       this.context.rules.splice(1, 0, {
         name: strictName,
+        meta: undefined,
         test: createTestObjectStrict({value: this.value}),
       });
     }

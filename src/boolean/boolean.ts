@@ -21,6 +21,7 @@ export class BooleanDesy<
     super(config);
     this.context.rules.push({
       name: 'boolean:boolean',
+      meta: undefined,
       test: testBoolean,
     });
   }
@@ -28,6 +29,7 @@ export class BooleanDesy<
   true() {
     this.context.rules.push({
       name: 'boolean:true',
+      meta: undefined,
       test: (value, {path}) => {
         if (value !== true) {
           return messages.boolean.true({path});
@@ -42,6 +44,7 @@ export class BooleanDesy<
   false() {
     this.context.rules.push({
       name: 'boolean:false',
+      meta: undefined,
       test: (value, {path}) => {
         if (value !== false) {
           return messages.boolean.false({path});

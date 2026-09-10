@@ -20,6 +20,7 @@ export class NullDesy extends Schema<null> {
 
     this.context.rules.push({
       name: 'null:null',
+      meta: undefined,
       test: testNull,
     });
   }

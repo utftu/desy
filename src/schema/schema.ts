@@ -39,7 +39,7 @@ export abstract class Schema<TValue> {
   }
 
   test<TValue extends (typeof this)['types']>(cb: Test) {
-    this.context.rules.push({name: 'custom', test: cb});
+    this.context.rules.push({name: 'custom', meta: undefined, test: cb});
     return this as any as Schema<TValue>;
   }
 }

@@ -46,6 +46,7 @@ export class MixedDesy<TValue extends any = any> extends Schema<TValue> {
   notVoid() {
     this.context.rules.push({
       name: 'mixed:not_void',
+      meta: undefined,
       test: (value, {path}) => {
         if (value === undefined || value === null) {
           return messages.mixed.not_void({path});
@@ -59,6 +60,7 @@ export class MixedDesy<TValue extends any = any> extends Schema<TValue> {
   oneOf<TValue extends Schema<any>>(schemas: TValue[]) {
     this.context.rules.push({
       name: 'mixed:one_of',
+      meta: schemas,
       test: (value, {path}) => {
         let lastError = '';
         for (const schema of schemas) {

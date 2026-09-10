@@ -34,12 +34,24 @@ describe('object', () => {
     });
     expect(valid).toBe('');
   });
+  it('notStrict: missing fields', () => {
+    const schema = object({name: string(), age: number()}).notStrict();
+
+    expect(schema.validate({})).toBe('');
+    expect(schema.validate({name: 'aleksey'})).toBe('');
+    expect(schema.validate({name: 42})).not.toBe('');
+  });
+  it('notStrict: twice keeps fields rule', () => {
+    const schema = object({name: string()}).notStrict().notStrict();
+
+    expect(schema.validate({name: 42})).not.toBe('');
+  });
   it('optionalFields', () => {
     const schema = object({name: string()}).optionalFields(['name']);
     const valid = schema.validate({});
     expect(valid).toBe('');
   });
-  it.only('optionalFields exist', () => {
+  it('optionalFields exist', () => {
     const schema = object({name: string()}).optionalFields(['name']);
     const valid = schema.validate({name: 'hello'});
     expect(valid).toBe('');
@@ -58,6 +70,3 @@ describe('object', () => {
     type A = Infer<typeof schema>;
   });
 });
-
-const a = number();
-const b = object({});

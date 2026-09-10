@@ -58,9 +58,14 @@ export class ObjectDesy<
   constructor(config: ConfigValue<TValue>) {
     super(config);
     this.value = config.value;
-    this.context.rules.push({name: 'object:object', test: testObject});
+    this.context.rules.push({
+      name: 'object:object',
+      test: testObject,
+      meta: undefined,
+    });
     this.context.rules.push({
       name: 'object:strict',
+      meta: undefined,
       test: createTestObjectStrict({
         optional: [],
         value: config.value,
@@ -68,6 +73,7 @@ export class ObjectDesy<
     });
     this.context.rules.push({
       name: 'object:fields',
+      meta: {fields: config.value, optional: []},
       test: (currentValue, {path}) => {
         for (const key in this.value) {
           const schema = config.value[key];
@@ -87,21 +93,22 @@ export class ObjectDesy<
     const strictIdx = this.context.rules.findIndex(
       ({name}) => name === strictName,
     );
-    if (strictIdx !== undefined) {
+    if (strictIdx !== -1) {
       this.context.rules.splice(strictIdx, 1);
     }
 
     const fieldsIdx = this.context.rules.findIndex(
       ({name}) => name === fieldsName,
     );
-    if (fieldsIdx !== undefined) {
+    if (fieldsIdx !== -1) {
       this.context.rules[fieldsIdx] = {
         name: fieldsName,
+        meta: {fields: this.value, optional: Object.keys(this.value)},
         test: (currentValue, {path}) => {
           for (const key in this.value) {
             const schema = this.value[key];
 
-            if (!(key in this.value)) {
+            if (!(key in currentValue)) {
               continue;
             }
             const error = schema.validate(currentValue[key], {
@@ -125,9 +132,10 @@ export class ObjectDesy<
     const strictIdx = this.context.rules.findIndex(
       ({name}) => name === strictName,
     );
-    if (strictIdx !== undefined) {
+    if (strictIdx !== -1) {
       this.context.rules[strictIdx] = {
         name: 'object:strict',
+        meta: undefined,
         test: createTestObjectStrict({
           optional: optionalFields,
           value: this.value,
@@ -137,9 +145,10 @@ export class ObjectDesy<
     const fieldsIdx = this.context.rules.findIndex(
       ({name}) => name === fieldsName,
     );
-    if (fieldsIdx !== undefined) {
+    if (fieldsIdx !== -1) {
       this.context.rules[fieldsIdx] = {
         name: fieldsName,
+        meta: {fields: this.value, optional: optionalFields},
         test: (currentValue, {path}) => {
           for (const key in this.value) {
             const schema = this.value[key];

@@ -27,9 +27,14 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 
   constructor(config: Config) {
     super(config);
-    this.context.rules.push({name: 'string:string', test: StringDesy.string});
+    this.context.rules.push({
+      name: 'string:string',
+      meta: undefined,
+      test: StringDesy.string,
+    });
     this.context.rules.push({
       name: 'string:required',
+      meta: undefined,
       test: StringDesy.required,
     });
   }
@@ -44,6 +49,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
   length(length: number) {
     this.context.rules.push({
       name: 'string:length',
+      meta: length,
       test: (value, {path}) => {
         if (value.length !== length) {
           return messages.string.length({path, length});
@@ -57,6 +63,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
   min(minLength: number) {
     this.context.rules.push({
       name: 'string:min',
+      meta: minLength,
       test: (value, {path}) => {
         if (value.length < minLength) {
           return messages.string.min({path, min: minLength});
@@ -70,6 +77,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
   max(maxLength: number) {
     this.context.rules.push({
       name: 'string:max',
+      meta: maxLength,
       test: (value, {path}) => {
         if (value.length > maxLength) {
           return messages.string.max({path, max: maxLength});
@@ -83,6 +91,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
   oneOf<TValue extends readonly string[]>(variants: TValue) {
     this.context.rules.push({
       name: 'string:one_of',
+      meta: variants,
       test: (value: string, {path}) => {
         if (!variants.includes(value)) {
           return messages.string.one_of({
@@ -101,6 +110,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
   regexp(regexp: RegExp) {
     this.context.rules.push({
       name: 'string:regexp',
+      meta: regexp,
       test: (value: string, {path}) => {
         if (!regexp.test(value)) {
           return messages.string.regexp({
@@ -120,5 +130,3 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
 export function string() {
   return StringDesy.new({context: Context.new()});
 }
-
-const a = string().oneOf(['hello'] as const);

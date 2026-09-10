@@ -36,6 +36,7 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
 
     this.context.rules.push({
       name: 'date:date',
+      meta: undefined,
       test: testDate,
     });
   }
@@ -43,6 +44,7 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
   min(min: DateValue) {
     this.context.rules.push({
       name: 'date:min',
+      meta: min,
       test: (value, {path}) => {
         const minDate = new Date(min);
         if (new Date(value).getTime() < minDate.getTime()) {
@@ -56,7 +58,8 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
 
   max(max: DateValue) {
     this.context.rules.push({
-      name: 'date:min',
+      name: 'date:max',
+      meta: max,
       test: (value, {path}) => {
         const maxDate = new Date(max);
         if (new Date(value).getTime() > maxDate.getTime()) {

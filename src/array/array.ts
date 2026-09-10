@@ -22,11 +22,13 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
 
     this.context.rules.push({
       name: 'array:array',
+      meta: undefined,
       test: testArray,
     });
 
     this.context.rules.push({
       name: 'array:items',
+      meta: config.value,
       test: (items, {path}) => {
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
@@ -47,6 +49,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
   min(minLength: number) {
     this.context.rules.push({
       name: 'array:min',
+      meta: minLength,
       test: (value, {path}) => {
         if (value.length < minLength) {
           return messages.array.min({path, min: minLength});
@@ -60,6 +63,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
   max(maxLength: number) {
     this.context.rules.push({
       name: 'array:max',
+      meta: maxLength,
       test: (value, {path}) => {
         if (value.length > maxLength) {
           return messages.array.max({path, max: maxLength});
@@ -73,6 +77,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
   length(length: number) {
     this.context.rules.push({
       name: 'array:length',
+      meta: length,
       test: (value, {path}) => {
         if (value.length !== length) {
           return messages.array.length({path, length});

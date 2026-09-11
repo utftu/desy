@@ -70,7 +70,7 @@ export class ObjectDesy<
     });
     this.context.rules.push({
       name: 'object:fields',
-      meta: {fields: config.value, optional: []},
+      meta: {fields: config.value},
       test: (currentValue, {path}) => {
         for (const key in this.value) {
           const schema = config.value[key];

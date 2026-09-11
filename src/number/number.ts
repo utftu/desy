@@ -27,7 +27,7 @@ export class NumberDesy extends Schema<number> {
   min(min: number) {
     this.context.rules.push({
       name: 'number:min',
-      meta: min,
+      meta: {min},
       test: (value, {path}) => {
         if (value < min) {
           return messages.number.min({path, min});
@@ -41,7 +41,7 @@ export class NumberDesy extends Schema<number> {
   max(max: number) {
     this.context.rules.push({
       name: 'number:max',
-      meta: max,
+      meta: {max},
       test: (value, {path}) => {
         if (value > max) {
           return messages.number.max({path, max});

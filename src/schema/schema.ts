@@ -15,6 +15,15 @@ export abstract class Schema<TValue> {
   constructor({context}: Config) {
     this.context = context;
   }
+  getContext() {
+    return this.context;
+  }
+
+  description(description: string) {
+    this.context.description = description;
+    return this;
+  }
+
   validate(value: any, {path}: ConfigValidate = defaultConfigValidate) {
     if (this.context.allowNull && value === null) return '';
     if (this.context.allowUndefined && value === undefined) return '';

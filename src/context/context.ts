@@ -8,15 +8,15 @@ export type RuleMetaMap = {
 
   'string:string': undefined;
   'string:required': undefined;
-  'string:length': number;
-  'string:min': number;
-  'string:max': number;
-  'string:one_of': readonly string[];
-  'string:regexp': RegExp;
+  'string:length': {length: number};
+  'string:min': {min: number};
+  'string:max': {max: number};
+  'string:one_of': {variants: readonly string[]};
+  'string:regexp': {regexp: RegExp};
 
   'number:number': undefined;
-  'number:min': number;
-  'number:max': number;
+  'number:min': {min: number};
+  'number:max': {max: number};
   'number:int': undefined;
   'number:float': undefined;
 
@@ -25,23 +25,23 @@ export type RuleMetaMap = {
   'boolean:false': undefined;
 
   'date:date': undefined;
-  'date:min': string | number | Date;
-  'date:max': string | number | Date;
+  'date:min': {min: string | number | Date};
+  'date:max': {max: string | number | Date};
 
   'null:null': undefined;
 
   'array:array': undefined;
-  'array:items': Schema<any>;
-  'array:min': number;
-  'array:max': number;
-  'array:length': number;
+  'array:items': {items: Schema<any>};
+  'array:min': {min: number};
+  'array:max': {max: number};
+  'array:length': {length: number};
 
   'object:object': undefined;
   'object:strict': undefined;
-  'object:fields': {fields: ObjectDesyValue; optional: string[]};
+  'object:fields': {fields: ObjectDesyValue};
 
   'mixed:not_void': undefined;
-  'mixed:one_of': Schema<any>[];
+  'mixed:one_of': {schemas: Schema<any>[]};
 };
 
 export type TestEntity = {
@@ -59,4 +59,5 @@ export class Context {
   rules: TestEntity[] = [];
   allowNull: boolean = false;
   allowUndefined: boolean = false;
+  description: string | undefined;
 }

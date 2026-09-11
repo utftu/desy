@@ -37,11 +37,11 @@ describe('rules meta', () => {
       'string:one_of',
       'string:regexp',
     ]);
-    expect(getRule(schema, 'string:length').meta).toBe(5);
-    expect(getRule(schema, 'string:min').meta).toBe(1);
-    expect(getRule(schema, 'string:max').meta).toBe(10);
-    expect(getRule(schema, 'string:one_of').meta).toBe(variants);
-    expect(getRule(schema, 'string:regexp').meta).toBe(regexp);
+    expect(getRule(schema, 'string:length').meta).toEqual({length: 5});
+    expect(getRule(schema, 'string:min').meta).toEqual({min: 1});
+    expect(getRule(schema, 'string:max').meta).toEqual({max: 10});
+    expect(getRule(schema, 'string:one_of').meta).toEqual({variants});
+    expect(getRule(schema, 'string:regexp').meta).toEqual({regexp});
   });
 
   it('number', () => {
@@ -54,8 +54,8 @@ describe('rules meta', () => {
       'number:int',
       'number:float',
     ]);
-    expect(getRule(schema, 'number:min').meta).toBe(1);
-    expect(getRule(schema, 'number:max').meta).toBe(10);
+    expect(getRule(schema, 'number:min').meta).toEqual({min: 1});
+    expect(getRule(schema, 'number:max').meta).toEqual({max: 10});
   });
 
   it('boolean', () => {
@@ -77,8 +77,8 @@ describe('rules meta', () => {
       'date:min',
       'date:max',
     ]);
-    expect(getRule(schema, 'date:min').meta).toBe(min);
-    expect(getRule(schema, 'date:max').meta).toBe(max);
+    expect(getRule(schema, 'date:min').meta).toEqual({min});
+    expect(getRule(schema, 'date:max').meta).toEqual({max});
   });
 
   it('null', () => {
@@ -96,10 +96,10 @@ describe('rules meta', () => {
       'array:max',
       'array:length',
     ]);
-    expect(getRule(schema, 'array:items').meta).toBe(items);
-    expect(getRule(schema, 'array:min').meta).toBe(1);
-    expect(getRule(schema, 'array:max').meta).toBe(10);
-    expect(getRule(schema, 'array:length').meta).toBe(5);
+    expect(getRule(schema, 'array:items').meta).toEqual({items});
+    expect(getRule(schema, 'array:min').meta).toEqual({min: 1});
+    expect(getRule(schema, 'array:max').meta).toEqual({max: 10});
+    expect(getRule(schema, 'array:length').meta).toEqual({length: 5});
   });
 
   it('object', () => {
@@ -110,10 +110,7 @@ describe('rules meta', () => {
       'object:object',
       'object:fields',
     ]);
-    expect(getRule(schema, 'object:fields').meta).toEqual({
-      fields,
-      optional: [],
-    });
+    expect(getRule(schema, 'object:fields').meta).toEqual({fields});
   });
 
   it('object:strict appears after strictObject', () => {
@@ -135,10 +132,7 @@ describe('rules meta', () => {
       'object:object',
       'object:fields',
     ]);
-    expect(getRule(schema, 'object:fields').meta).toEqual({
-      fields,
-      optional: [],
-    });
+    expect(getRule(schema, 'object:fields').meta).toEqual({fields});
   });
 
   it('mixed', () => {
@@ -149,7 +143,7 @@ describe('rules meta', () => {
       'mixed:not_void',
       'mixed:one_of',
     ]);
-    expect(getRule(schema, 'mixed:one_of').meta).toBe(schemas);
+    expect(getRule(schema, 'mixed:one_of').meta).toEqual({schemas});
   });
 
   it('custom', () => {

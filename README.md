@@ -6,6 +6,7 @@
 - [Key features](#key-features)
 - [Examples](#examples)
 - [API](#api)
+- [JSON Schema](#json-schema)
 - [Benchmark](#benchmark)
 
 ## Install
@@ -116,6 +117,17 @@ const schema = d.mixed().test((value) => {
 
 schema.validate('hello'); // error
 schema.validate('world'); // valid
+```
+
+- `.description(text: string)`
+
+Describes the schema for a reader. Ignored by `validate`, used by
+[`createJsonSchema`](#json-schema).
+
+```ts
+const schema = d.string().description('Full name as in the passport');
+
+schema.validate('John'); // valid
 ```
 
 ### mixed
@@ -397,6 +409,67 @@ const schema = d.arrar(d.sting()).max(2);
 schema.validate(['hello', 'world']); // valid
 schema.validate(['hello', 'world', 'foo']); // error
 ```
+
+## JSON Schema
+
+`createJsonSchema(schema)` turns a desy schema into a JSON Schema
+(draft 2020-12). Useful when the data you are about to validate comes from an
+LLM: the same schema constrains the generation and checks the answer.
+
+```ts
+import {d, createJsonSchema} from 'desy';
+
+const schema = d
+  .object({
+    sentiment: d.string().oneOf(['positive', 'negative']),
+    score: d.number().int().min(1).max(5).description('From 1 to 5'),
+    reply: d.string().undefinable(),
+  })
+  .description('Review breakdown');
+
+createJsonSchema(schema);
+```
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sentiment": {
+      "type": "string",
+      "minLength": 1,
+      "enum": ["positive", "negative"]
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "From 1 to 5"
+    },
+    "reply": {"type": "string", "minLength": 1}
+  },
+  "required": ["sentiment", "score"],
+  "description": "Review breakdown"
+}
+```
+
+Worth knowing:
+
+- `d.string()` becomes `minLength: 1` — an empty string is not valid in desy.
+- `additionalProperties` is always `false`, whether or not `strictObject()` was
+  called. Strict structured outputs require it, and a schema stricter than the
+  validator never rejects what desy accepts.
+- A field is in `required` unless its schema is `undefinable()` — JSON has no
+  `undefined`, absence is expressed by `required` alone.
+- `nullable()` becomes `"type": ["string", "null"]`.
+- Repeated constraints narrow instead of overwriting: `.min(2).min(5)` gives
+  `minLength: 5`, two `oneOf` intersect. A second `regexp` on the same string
+  cannot be narrowed and throws.
+
+Five rules do not convert and throw instead of being dropped: `.test()`,
+`number().float()`, `date().min()`, `date().max()` and `mixed().notVoid()`.
+Describe such a limit with `.description()` so the model still learns about it.
 
 ## benchmark
 

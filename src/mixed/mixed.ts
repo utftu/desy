@@ -60,7 +60,7 @@ export class MixedDesy<TValue extends any = any> extends Schema<TValue> {
   oneOf<TValue extends Schema<any>>(schemas: TValue[]) {
     this.context.rules.push({
       name: 'mixed:one_of',
-      meta: schemas,
+      meta: {schemas},
       test: (value, {path}) => {
         let lastError = '';
         for (const schema of schemas) {

@@ -130,6 +130,24 @@ const schema = d.string().description('Full name as in the passport');
 schema.validate('John'); // valid
 ```
 
+- `.message(message: string | (({path}) => string))`
+
+Replaces the error of any rule in the chain. A message written on a parent
+replaces whatever came from below, including which field failed.
+
+```ts
+const schema = d.string().min(3).message('Name is too short');
+
+schema.validate('a'); // 'Name is too short'
+schema.validate(42); // 'Name is too short'
+
+const withPath = d.object({
+  name: d.string().message(({path}) => `${path} is wrong`),
+});
+
+withPath.validate({name: ''}); // 'Value.name is wrong'
+```
+
 ### mixed
 
 - `mixed()`
@@ -218,6 +236,15 @@ const schema = d.number();
 
 schema.validate(42); // valid
 schema.validate('42'); // error
+```
+
+- `.oneOf(variants: number[])`
+
+```ts
+const schema = d.number().oneOf([1, 2, 3]);
+
+schema.validate(2); // valid
+schema.validate(4); // error
 ```
 
 - `.int()`
@@ -463,6 +490,9 @@ Worth knowing:
 - A field is in `required` unless its schema is `undefinable()` — JSON has no
   `undefined`, absence is expressed by `required` alone.
 - `nullable()` becomes `"type": ["string", "null"]`.
+- `oneOf` becomes `enum`, for strings and numbers alike.
+- `.message()` never reaches the schema: an error message is for a person,
+  a `description` is for the model.
 - Repeated constraints narrow instead of overwriting: `.min(2).min(5)` gives
   `minLength: 5`, two `oneOf` intersect. A second `regexp` on the same string
   cannot be narrowed and throws.

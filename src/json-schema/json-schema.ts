@@ -7,7 +7,7 @@ export type JsonSchema = {
   type?: string | string[];
   description?: string;
   const?: boolean;
-  enum?: readonly string[];
+  enum?: readonly (string | number)[];
   pattern?: string;
   format?: string;
   minLength?: number;
@@ -42,8 +42,8 @@ function narrowMax(current: number | undefined, value: number) {
 }
 
 function narrowEnum(
-  current: readonly string[] | undefined,
-  variants: readonly string[],
+  current: readonly (string | number)[] | undefined,
+  variants: readonly (string | number)[],
 ) {
   if (current === undefined) {
     return variants;
@@ -89,6 +89,9 @@ function applyRule(rule: TestEntity, jsonSchema: JsonSchema) {
       return;
     case 'number:number':
       jsonSchema.type = 'number';
+      return;
+    case 'number:one_of':
+      jsonSchema.enum = narrowEnum(jsonSchema.enum, rule.meta.variants);
       return;
     case 'number:int':
       jsonSchema.type = 'integer';

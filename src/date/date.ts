@@ -1,4 +1,4 @@
-import {Context} from '../context/context.ts';
+import {Context, type TestConfig} from '../context/context.ts';
 import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
 import {Config} from '../types';
@@ -26,6 +26,28 @@ const testDate = (value: any, {path}: DefaultMessageProps) => {
   return '';
 };
 
+function testDateMin(
+  value: any,
+  {path, meta: {min}}: TestConfig<{min: DateValue}>,
+) {
+  const minDate = new Date(min);
+  if (new Date(value).getTime() < minDate.getTime()) {
+    return messages.date.min({path, min: minDate.toISOString()});
+  }
+  return '';
+}
+
+function testDateMax(
+  value: any,
+  {path, meta: {max}}: TestConfig<{max: DateValue}>,
+) {
+  const maxDate = new Date(max);
+  if (new Date(value).getTime() > maxDate.getTime()) {
+    return messages.date.max({path, max: maxDate.toISOString()});
+  }
+  return '';
+}
+
 export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
   static new(config: Config) {
     return new DateDesy(config);
@@ -45,13 +67,7 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
     this.context.rules.push({
       name: 'date:min',
       meta: {min},
-      test: (value, {path}) => {
-        const minDate = new Date(min);
-        if (new Date(value).getTime() < minDate.getTime()) {
-          return messages.date.min({path, min: minDate.toISOString()});
-        }
-        return '';
-      },
+      test: testDateMin,
     });
     return this;
   }
@@ -60,13 +76,7 @@ export class DateDesy<TValue extends DateValue> extends Schema<TValue> {
     this.context.rules.push({
       name: 'date:max',
       meta: {max},
-      test: (value, {path}) => {
-        const maxDate = new Date(max);
-        if (new Date(value).getTime() > maxDate.getTime()) {
-          return messages.date.max({path, max: maxDate.toISOString()});
-        }
-        return '';
-      },
+      test: testDateMax,
     });
     return this;
   }

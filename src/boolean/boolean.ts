@@ -10,6 +10,20 @@ const testBoolean = (currentValue: any, {path}: DefaultMessageProps) => {
   return '';
 };
 
+function testBooleanTrue(value: boolean, {path}: DefaultMessageProps) {
+  if (value !== true) {
+    return messages.boolean.true({path});
+  }
+  return '';
+}
+
+function testBooleanFalse(value: boolean, {path}: DefaultMessageProps) {
+  if (value !== false) {
+    return messages.boolean.false({path});
+  }
+  return '';
+}
+
 export class BooleanDesy<
   TValue extends boolean = boolean,
 > extends Schema<TValue> {
@@ -30,12 +44,7 @@ export class BooleanDesy<
     this.context.rules.push({
       name: 'boolean:true',
       meta: undefined,
-      test: (value, {path}) => {
-        if (value !== true) {
-          return messages.boolean.true({path});
-        }
-        return '';
-      },
+      test: testBooleanTrue,
     });
 
     return this as BooleanDesy<true>;
@@ -45,12 +54,7 @@ export class BooleanDesy<
     this.context.rules.push({
       name: 'boolean:false',
       meta: undefined,
-      test: (value, {path}) => {
-        if (value !== false) {
-          return messages.boolean.false({path});
-        }
-        return '';
-      },
+      test: testBooleanFalse,
     });
     return this as BooleanDesy<false>;
   }

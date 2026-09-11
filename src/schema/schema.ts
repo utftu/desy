@@ -1,4 +1,4 @@
-import {Context, Test} from '../context/context.ts';
+import {Context, Test, type Message} from '../context/context.ts';
 
 type Config = {
   context: Context;
@@ -6,7 +6,20 @@ type Config = {
 
 export type Infer<TType extends Schema<any>> = TType['types'];
 type ConfigValidate = {path: string};
+type CreateErrorConfig = {error: string; path: string};
 const defaultConfigValidate = {path: 'Value'};
+
+function createError(context: Context, {error, path}: CreateErrorConfig) {
+  if (context.message === undefined) {
+    return error;
+  }
+
+  if (typeof context.message === 'string') {
+    return context.message;
+  }
+
+  return context.message({path});
+}
 
 export abstract class Schema<TValue> {
   types!: TValue;
@@ -24,13 +37,19 @@ export abstract class Schema<TValue> {
     return this;
   }
 
+  message(message: Message) {
+    this.context.message = message;
+    return this;
+  }
+
   validate(value: any, {path}: ConfigValidate = defaultConfigValidate) {
     if (this.context.allowNull && value === null) return '';
     if (this.context.allowUndefined && value === undefined) return '';
     for (const testEntity of this.context.rules) {
-      const error = testEntity.test(value, {path});
+      const test = testEntity.test as Test<any>;
+      const error = test(value, {path, meta: testEntity.meta});
       if (error !== '') {
-        return error;
+        return createError(this.context, {error, path});
       }
     }
     return '';

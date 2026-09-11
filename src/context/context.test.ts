@@ -45,15 +45,17 @@ describe('rules meta', () => {
   });
 
   it('number', () => {
-    const schema = d.number().min(1).max(10).int().float();
+    const schema = d.number().min(1).max(10).oneOf([1, 2]).int().float();
 
     expect(getRules(schema).map(({name}) => name)).toEqual([
       'number:number',
       'number:min',
       'number:max',
+      'number:one_of',
       'number:int',
       'number:float',
     ]);
+    expect(getRule(schema, 'number:one_of').meta).toEqual({variants: [1, 2]});
     expect(getRule(schema, 'number:min').meta).toEqual({min: 1});
     expect(getRule(schema, 'number:max').meta).toEqual({max: 10});
   });

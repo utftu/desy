@@ -1,5 +1,5 @@
 import {Schema, type Infer} from '../schema/schema.ts';
-import {Context} from '../context/context.ts';
+import {Context, type TestConfig} from '../context/context.ts';
 import {type ConfigValue} from '../types.ts';
 import {DefaultMessageProps, messages} from '../messages.ts';
 export type ObjectDesyValue = Record<string, Schema<any>>;
@@ -27,28 +27,41 @@ const testObject = (value: any, {path}: DefaultMessageProps) => {
   return '';
 };
 
-const createTestObjectStrict = ({
-  value: schemaValue,
-}: {
-  value: ObjectDesyValue;
-}) => {
-  return (currentValue: Object, {path}: DefaultMessageProps) => {
-    const valueKeys = Object.keys(schemaValue);
-    const currentValueKeys = Object.keys(currentValue);
+function testObjectStrict(
+  currentValue: Object,
+  {path, meta: {fields}}: TestConfig<{fields: ObjectDesyValue}>,
+) {
+  const valueKeys = Object.keys(fields);
+  const currentValueKeys = Object.keys(currentValue);
 
-    if (currentValueKeys.length > valueKeys.length) {
-      return messages.object.unknown({path});
+  if (currentValueKeys.length > valueKeys.length) {
+    return messages.object.unknown({path});
+  }
+
+  for (const key in currentValue) {
+    if (!(key in fields)) {
+      return messages.object.no_property({path: key});
     }
+  }
 
-    for (const key in currentValue) {
-      if (!(key in schemaValue)) {
-        return messages.object.no_property({path: key});
-      }
+  return '';
+}
+
+function testObjectFields(
+  currentValue: any,
+  {path, meta: {fields}}: TestConfig<{fields: ObjectDesyValue}>,
+) {
+  for (const key in fields) {
+    const error = fields[key]!.validate(currentValue[key], {
+      path: path === '' ? key : `${path}.${key}`,
+    });
+    if (error !== '') {
+      return error;
     }
+  }
 
-    return '';
-  };
-};
+  return '';
+}
 
 export class ObjectDesy<
   TValue extends ObjectDesyValue,
@@ -71,18 +84,7 @@ export class ObjectDesy<
     this.context.rules.push({
       name: 'object:fields',
       meta: {fields: config.value},
-      test: (currentValue, {path}) => {
-        for (const key in this.value) {
-          const schema = config.value[key];
-          const error = schema.validate(currentValue[key], {
-            path: path === '' ? key : `${path}.${key}`,
-          });
-          if (error !== '') {
-            return error;
-          }
-        }
-        return '';
-      },
+      test: testObjectFields,
     });
   }
 
@@ -93,8 +95,8 @@ export class ObjectDesy<
     if (strictIdx === -1) {
       this.context.rules.splice(1, 0, {
         name: strictName,
-        meta: undefined,
-        test: createTestObjectStrict({value: this.value}),
+        meta: {fields: this.value},
+        test: testObjectStrict,
       });
     }
     return this;

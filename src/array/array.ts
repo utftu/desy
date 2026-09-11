@@ -1,4 +1,4 @@
-import {Context} from '../context/context.ts';
+import {Context, type TestConfig} from '../context/context.ts';
 import {DefaultMessageProps, messages} from '../messages.ts';
 import {Infer, Schema} from '../schema/schema.ts';
 import {ConfigValue} from '../types.ts';
@@ -9,6 +9,52 @@ const testArray = (currentValue: any, {path}: DefaultMessageProps) => {
   }
   return '';
 };
+
+function testArrayItems(
+  items: any[],
+  {path, meta}: TestConfig<{items: Schema<any>}>,
+) {
+  for (let i = 0; i < items.length; i++) {
+    const error = meta.items.validate(items[i], {
+      path: path === '' ? i.toString() : `${path}[].${i}`,
+    });
+    if (error !== '') {
+      return error;
+    }
+  }
+
+  return '';
+}
+
+function testArrayMin(
+  value: any[],
+  {path, meta: {min}}: TestConfig<{min: number}>,
+) {
+  if (value.length < min) {
+    return messages.array.min({path, min});
+  }
+  return '';
+}
+
+function testArrayMax(
+  value: any[],
+  {path, meta: {max}}: TestConfig<{max: number}>,
+) {
+  if (value.length > max) {
+    return messages.array.max({path, max});
+  }
+  return '';
+}
+
+function testArrayLength(
+  value: any[],
+  {path, meta: {length}}: TestConfig<{length: number}>,
+) {
+  if (value.length !== length) {
+    return messages.array.length({path, length});
+  }
+  return '';
+}
 
 export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
   Infer<TSchema>[]
@@ -29,20 +75,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
     this.context.rules.push({
       name: 'array:items',
       meta: {items: config.value},
-      test: (items, {path}) => {
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-
-          const error = config.value.validate(item, {
-            path: path === '' ? i.toString() : `${path}[].${i}`,
-          });
-          if (error !== '') {
-            return error;
-          }
-        }
-
-        return '';
-      },
+      test: testArrayItems,
     });
   }
 
@@ -50,12 +83,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
     this.context.rules.push({
       name: 'array:min',
       meta: {min: minLength},
-      test: (value, {path}) => {
-        if (value.length < minLength) {
-          return messages.array.min({path, min: minLength});
-        }
-        return '';
-      },
+      test: testArrayMin,
     });
     return this;
   }
@@ -64,12 +92,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
     this.context.rules.push({
       name: 'array:max',
       meta: {max: maxLength},
-      test: (value, {path}) => {
-        if (value.length > maxLength) {
-          return messages.array.max({path, max: maxLength});
-        }
-        return '';
-      },
+      test: testArrayMax,
     });
     return this;
   }
@@ -78,12 +101,7 @@ export class ArrayDesy<TSchema extends Schema<any>> extends Schema<
     this.context.rules.push({
       name: 'array:length',
       meta: {length},
-      test: (value, {path}) => {
-        if (value.length !== length) {
-          return messages.array.length({path, length});
-        }
-        return '';
-      },
+      test: testArrayLength,
     });
     return this;
   }

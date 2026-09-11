@@ -1,10 +1,60 @@
 import {DefaultMessageProps, messages} from '../messages.ts';
 import {Schema} from '../schema/schema.ts';
-import {Context} from '../context/context.ts';
+import {Context, type TestConfig} from '../context/context.ts';
 
 type Config = {
   context: Context;
 };
+
+function testStringLength(
+  value: string,
+  {path, meta: {length}}: TestConfig<{length: number}>,
+) {
+  if (value.length !== length) {
+    return messages.string.length({path, length});
+  }
+  return '';
+}
+
+function testStringMin(
+  value: string,
+  {path, meta: {min}}: TestConfig<{min: number}>,
+) {
+  if (value.length < min) {
+    return messages.string.min({path, min});
+  }
+  return '';
+}
+
+function testStringMax(
+  value: string,
+  {path, meta: {max}}: TestConfig<{max: number}>,
+) {
+  if (value.length > max) {
+    return messages.string.max({path, max});
+  }
+  return '';
+}
+
+function testStringOneOf(
+  value: string,
+  {path, meta: {variants}}: TestConfig<{variants: readonly string[]}>,
+) {
+  if (!variants.includes(value)) {
+    return messages.string.one_of({path, variants: variants as any, value});
+  }
+  return '';
+}
+
+function testStringRegexp(
+  value: string,
+  {path, meta: {regexp}}: TestConfig<{regexp: RegExp}>,
+) {
+  if (!regexp.test(value)) {
+    return messages.string.regexp({path, regexp: regexp.toString()});
+  }
+  return '';
+}
 
 export class StringDesy<TValue extends string> extends Schema<TValue> {
   static new<TValue extends string>(config: Config) {
@@ -52,12 +102,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     this.context.rules.push({
       name: 'string:length',
       meta: {length},
-      test: (value, {path}) => {
-        if (value.length !== length) {
-          return messages.string.length({path, length});
-        }
-        return '';
-      },
+      test: testStringLength,
     });
     return this;
   }
@@ -66,12 +111,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     this.context.rules.push({
       name: 'string:min',
       meta: {min: minLength},
-      test: (value, {path}) => {
-        if (value.length < minLength) {
-          return messages.string.min({path, min: minLength});
-        }
-        return '';
-      },
+      test: testStringMin,
     });
     return this;
   }
@@ -80,12 +120,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     this.context.rules.push({
       name: 'string:max',
       meta: {max: maxLength},
-      test: (value, {path}) => {
-        if (value.length > maxLength) {
-          return messages.string.max({path, max: maxLength});
-        }
-        return '';
-      },
+      test: testStringMax,
     });
     return this;
   }
@@ -94,16 +129,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     this.context.rules.push({
       name: 'string:one_of',
       meta: {variants},
-      test: (value: string, {path}) => {
-        if (!variants.includes(value)) {
-          return messages.string.one_of({
-            path,
-            variants: variants as any,
-            value,
-          });
-        }
-        return '';
-      },
+      test: testStringOneOf,
     });
 
     return this as StringDesy<TValue[number]>;
@@ -113,16 +139,7 @@ export class StringDesy<TValue extends string> extends Schema<TValue> {
     this.context.rules.push({
       name: 'string:regexp',
       meta: {regexp},
-      test: (value: string, {path}) => {
-        if (!regexp.test(value)) {
-          return messages.string.regexp({
-            path,
-            regexp: regexp.toString(),
-          });
-        }
-
-        return '';
-      },
+      test: testStringRegexp,
     });
 
     return this;

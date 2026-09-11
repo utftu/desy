@@ -42,6 +42,12 @@ export const messages = {
     max: ({path, max}: Max) => `${path} must be less than or equal to ${max}`,
     int: ({path}: DefaultMessageProps) => `${path} must be integer`,
     float: ({path}: DefaultMessageProps) => `${path} must be float`,
+    one_of: ({
+      path,
+      variants,
+      value,
+    }: DefaultMessageProps & {variants: number[]; value: number}) =>
+      `${path} must have one of ${variants.join(', ')} but has ${value}`,
   },
   array: {
     array: ({path}: DefaultMessageProps) => `${path} must be array`,

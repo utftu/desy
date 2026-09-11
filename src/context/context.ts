@@ -1,7 +1,15 @@
 import {type Schema} from '../schema/schema.ts';
 import {type ObjectDesyValue} from '../object/object.ts';
+import {type DefaultMessageProps} from '../messages.ts';
 
-export type Test = (value: any, {path}: {path: string}) => string;
+export type Message = string | ((props: DefaultMessageProps) => string);
+
+export type TestConfig<TMeta = undefined> = {path: string; meta: TMeta};
+
+export type Test<TMeta = undefined> = (
+  value: any,
+  {path, meta}: TestConfig<TMeta>,
+) => string;
 
 export type RuleMetaMap = {
   custom: undefined;
@@ -17,6 +25,7 @@ export type RuleMetaMap = {
   'number:number': undefined;
   'number:min': {min: number};
   'number:max': {max: number};
+  'number:one_of': {variants: readonly number[]};
   'number:int': undefined;
   'number:float': undefined;
 
@@ -37,7 +46,7 @@ export type RuleMetaMap = {
   'array:length': {length: number};
 
   'object:object': undefined;
-  'object:strict': undefined;
+  'object:strict': {fields: ObjectDesyValue};
   'object:fields': {fields: ObjectDesyValue};
 
   'mixed:not_void': undefined;
@@ -48,7 +57,7 @@ export type TestEntity = {
   [TName in keyof RuleMetaMap]: {
     name: TName;
     meta: RuleMetaMap[TName];
-    test: Test;
+    test: Test<RuleMetaMap[TName]>;
   };
 }[keyof RuleMetaMap];
 
@@ -60,4 +69,5 @@ export class Context {
   allowNull: boolean = false;
   allowUndefined: boolean = false;
   description: string | undefined;
+  message: Message | undefined;
 }

@@ -93,16 +93,12 @@ describe('createJsonSchema', () => {
     });
   });
 
-  it('additionalProperties stays false without strictObject', () => {
+  it('additionalProperties stays false for loose objects', () => {
     expect(
       createJsonSchema(d.object({name: d.string()})).additionalProperties,
     ).toBe(false);
     expect(
-      createJsonSchema(d.object({name: d.string()}).strictObject())
-        .additionalProperties,
-    ).toBe(false);
-    expect(
-      createJsonSchema(d.object({name: d.string()}).notStrict())
+      createJsonSchema(d.object({name: d.string()}).loose())
         .additionalProperties,
     ).toBe(false);
   });

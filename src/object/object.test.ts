@@ -16,8 +16,8 @@ describe('object', () => {
     const schema = object({name: string()});
     expect(schema.validate(null)).not.toBe('');
   });
-  it('object:strict', () => {
-    const schema = object({name: string()}).strictObject();
+  it('object:strict — unknown key is rejected by default', () => {
+    const schema = object({name: string()});
     const error = schema.validate({
       name: 'aleksey',
       age: 23,
@@ -31,16 +31,23 @@ describe('object', () => {
     });
     expect(error).not.toBe('');
   });
-  it('notStrict', () => {
-    const schema = object({name: string()}).notStrict();
+  it('loose', () => {
+    const schema = object({name: string()}).loose();
     const valid = schema.validate({
       name: 'aleksey',
       age: 25,
     });
     expect(valid).toBe('');
   });
+
+  it('nested object rejects unknown key', () => {
+    const schema = object({user: object({name: string()})});
+    const error = schema.validate({user: {name: 'aleksey', age: 25}});
+    expect(error).not.toBe('');
+  });
+
   it('unknown', () => {
-    const schema = object({name: string()}).strictObject();
+    const schema = object({name: string()});
     const error = schema.validate({
       fullName: 'Smith',
       name: 'John',

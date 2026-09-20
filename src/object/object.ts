@@ -78,8 +78,13 @@ export class ObjectDesy<
     this.value = config.value;
     this.context.rules.push({
       name: 'object:object',
-      test: testObject,
       meta: undefined,
+      test: testObject,
+    });
+    this.context.rules.push({
+      name: strictName,
+      meta: {fields: config.value},
+      test: testObjectStrict,
     });
     this.context.rules.push({
       name: 'object:fields',
@@ -88,21 +93,7 @@ export class ObjectDesy<
     });
   }
 
-  strictObject() {
-    const strictIdx = this.context.rules.findIndex(
-      ({name}) => name === strictName,
-    );
-    if (strictIdx === -1) {
-      this.context.rules.splice(1, 0, {
-        name: strictName,
-        meta: {fields: this.value},
-        test: testObjectStrict,
-      });
-    }
-    return this;
-  }
-
-  notStrict() {
+  loose() {
     const strictIdx = this.context.rules.findIndex(
       ({name}) => name === strictName,
     );

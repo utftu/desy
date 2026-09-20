@@ -110,31 +110,34 @@ describe('rules meta', () => {
 
     expect(getRules(schema).map(({name}) => name)).toEqual([
       'object:object',
+      'object:strict',
+      'object:fields',
+    ]);
+    expect(getRule(schema, 'object:fields').meta).toEqual({fields});
+    expect(getRule(schema, 'object:strict').meta).toEqual({fields});
+  });
+
+  it('object:strict disappears after loose', () => {
+    const fields = {name: d.string(), age: d.number()};
+    const schema = d.object(fields).loose();
+
+    expect(getRules(schema).map(({name}) => name)).toEqual([
+      'object:object',
       'object:fields',
     ]);
     expect(getRule(schema, 'object:fields').meta).toEqual({fields});
   });
 
-  it('object:strict appears after strictObject', () => {
+  it('object:strict stays after object:object in a mixed chain', () => {
     const fields = {name: d.string(), age: d.number()};
-    const schema = d.object(fields).strictObject();
+    const schema = d.mixed().notVoid().object(fields);
 
     expect(getRules(schema).map(({name}) => name)).toEqual([
+      'mixed:not_void',
       'object:object',
       'object:strict',
       'object:fields',
     ]);
-  });
-
-  it('object:fields keeps meta after notStrict', () => {
-    const fields = {name: d.string(), age: d.number()};
-    const schema = d.object(fields).strictObject().notStrict();
-
-    expect(getRules(schema).map(({name}) => name)).toEqual([
-      'object:object',
-      'object:fields',
-    ]);
-    expect(getRule(schema, 'object:fields').meta).toEqual({fields});
   });
 
   it('mixed', () => {

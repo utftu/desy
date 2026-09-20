@@ -371,32 +371,37 @@ schema.validate({name: 'alex', age: 42}); // error
 schema.validate({name: 42}); // error
 ```
 
-- `.notStrict()`
+An object is strict by default: an unknown key is an error. Use `.loose()`
+where a wider value is expected.
+
+- `.loose()`
 
 ```ts
 const schema = d
   .object({
     name: d.sting(),
   })
-  .notStrict();
+  .loose();
 
 schema.validate({name: 'alex'}); // valid
 schema.validate({name: 'alex', age: 42}); // valid
 schema.validate({name: 42}); // error
 ```
 
-- `.optionalFields(fileds: string[])`
+A field is optional when its own schema says so — `.optional()`,
+`.undefinable()` or `.nullable()`, see [schema](#schema). The object reads
+optionality off the field, there is no separate list of optional keys.
 
 ```ts
-const schema = d
-  .object({
-    name: d.sting(),
-  })
-  .optionalFields(['name']);
+const schema = d.object({
+  name: d.sting(),
+  nick: d.sting().optional(),
+});
 
+schema.validate({name: 'alex', nick: 'al'}); // valid
 schema.validate({name: 'alex'}); // valid
-schema.validate({}); // valid
-schema.validate({name: 42}); // error
+schema.validate({nick: 'al'}); // error
+schema.validate({name: 'alex', nick: 42}); // error
 ```
 
 ### array
@@ -484,9 +489,9 @@ createJsonSchema(schema);
 Worth knowing:
 
 - `d.string()` becomes `minLength: 1` — an empty string is not valid in desy.
-- `additionalProperties` is always `false`, whether or not `strictObject()` was
-  called. Strict structured outputs require it, and a schema stricter than the
-  validator never rejects what desy accepts.
+- `additionalProperties` is always `false`, `.loose()` included. Strict
+  structured outputs require it, and a schema stricter than the validator never
+  rejects what desy accepts.
 - A field is in `required` unless its schema is `undefinable()` — JSON has no
   `undefined`, absence is expressed by `required` alone.
 - `nullable()` becomes `"type": ["string", "null"]`.

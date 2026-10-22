@@ -7,7 +7,7 @@ export type JsonSchema = {
   type?: string | string[];
   description?: string;
   const?: boolean;
-  enum?: readonly (string | number)[];
+  enum?: readonly (string | number | boolean | null)[];
   pattern?: string;
   format?: string;
   minLength?: number;
@@ -42,7 +42,7 @@ function narrowMax(current: number | undefined, value: number) {
 }
 
 function narrowEnum(
-  current: readonly (string | number)[] | undefined,
+  current: readonly (string | number | boolean | null)[] | undefined,
   variants: readonly (string | number)[],
 ) {
   if (current === undefined) {
@@ -182,6 +182,18 @@ function applyFields(
   jsonSchema.required = required;
 }
 
+function applyNullValue(jsonSchema: JsonSchema) {
+  if (jsonSchema.const !== undefined) {
+    jsonSchema.enum = [jsonSchema.const, null];
+    delete jsonSchema.const;
+    return;
+  }
+
+  if (jsonSchema.enum !== undefined) {
+    jsonSchema.enum = [...jsonSchema.enum, null];
+  }
+}
+
 function applyNull(context: Context, jsonSchema: JsonSchema): JsonSchema {
   if (context.allowNull === false) {
     return jsonSchema;
@@ -189,6 +201,7 @@ function applyNull(context: Context, jsonSchema: JsonSchema): JsonSchema {
 
   if (typeof jsonSchema.type === 'string') {
     jsonSchema.type = [jsonSchema.type, 'null'];
+    applyNullValue(jsonSchema);
     return jsonSchema;
   }
 

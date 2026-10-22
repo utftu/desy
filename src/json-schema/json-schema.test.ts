@@ -117,6 +117,37 @@ describe('createJsonSchema', () => {
     });
   });
 
+  it('nullable enum keeps null allowed', () => {
+    expect(
+      createJsonSchema(d.string().oneOf(['a', 'b']).nullable()).enum,
+    ).toEqual(['a', 'b', null]);
+    expect(createJsonSchema(d.number().oneOf([1, 2]).nullable()).enum).toEqual([
+      1,
+      2,
+      null,
+    ]);
+    expect(createJsonSchema(d.string().oneOf(['a', 'b'])).enum).toEqual([
+      'a',
+      'b',
+    ]);
+  });
+
+  it('nullable const becomes enum with null', () => {
+    const schema = createJsonSchema(d.boolean().true().nullable());
+
+    expect(schema.enum).toEqual([true, null]);
+    expect(schema.const).toBeUndefined();
+    expect(schema.type).toEqual(['boolean', 'null']);
+  });
+
+  it('nullable field inside object keeps null in enum', () => {
+    const schema = createJsonSchema(
+      d.object({blocker: d.string().oneOf(['rule']).nullable()}),
+    );
+
+    expect(schema.properties!.blocker!.enum).toEqual(['rule', null]);
+  });
+
   it('nested', () => {
     const schema = d.object({
       tags: d.array(d.string()),

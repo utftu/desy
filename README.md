@@ -494,7 +494,10 @@ Worth knowing:
   rejects what desy accepts.
 - A field is in `required` unless its schema is `undefinable()` — JSON has no
   `undefined`, absence is expressed by `required` alone.
-- `nullable()` becomes `"type": ["string", "null"]`.
+- `nullable()` becomes `"type": ["string", "null"]`, and where the schema
+  enumerates values, `null` joins them: `oneOf` gives `enum: ["a", "b", null]`,
+  a `const` turns into `enum: [value, null]`. String and number keywords stay
+  as they are — they do not apply to `null`.
 - `oneOf` becomes `enum`, for strings and numbers alike.
 - `.message()` never reaches the schema: an error message is for a person,
   a `description` is for the model.
